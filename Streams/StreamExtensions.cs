@@ -38,7 +38,7 @@ namespace Stringier.Streams {
 		/// <exception cref="ObjectDisposedException">Methods were called after the stream was closed.</exception>
 		public static CodePoint ReadCodePoint(this Stream stream) {
 			Guard.NotNull(stream, nameof(stream));
-			Byte[] sequence = new Byte[4] { 0x00, 0x00, 0x00, 0x00 };
+			Byte[] sequence = new Byte[] { 0x00, 0x00, 0x00, 0x00 };
 			Int32 bytes = 1;
 			// The first byte in the sequence encodes the length of the sequence, so determine that, then read in the rest of the sequence.
 			Int32 @byte = stream.ReadByte();

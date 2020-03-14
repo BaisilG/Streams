@@ -47,8 +47,8 @@ namespace Tests {
 			Assert.Equal(new Rune('€'), stream.ReadRune());
 			Assert.Equal(new Rune(0x1D11E), stream.ReadRune());
 			stream.Position = 0;
-			Assert.Equal(new Rune[] { new Rune('A'), new Rune('ö'), new Rune('Ж') }, stream.ReadRune(3));
-			Assert.Equal(new Rune[] { new Rune('€'), new Rune(0x1D11E) }, stream.ReadRune(2));
+			Assert.Equal(new[] { new Rune('A'), new Rune('ö'), new Rune('Ж') }, stream.ReadRune(3));
+			Assert.Equal(new[] { new Rune('€'), new Rune(0x1D11E) }, stream.ReadRune(2));
 		}
 	}
 }
