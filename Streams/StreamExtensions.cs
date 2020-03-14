@@ -36,7 +36,7 @@ namespace Stringier.Streams {
 		/// <para>This method requires a bit of explaination as there's a great deal of misunderstandings. <see cref="Char"/> is a 16-bit integer, yet UNICODE requires at least 21 bits of storage. This is an archaic decision from back in the days of UCS-2. Changing things to update with the times wouldn't be feasible. Because of this, .NET strings sometimes require 2 characters to represent a single codepoint. That means, while in most cases, this operation will return a single character in an array, there are cases where the codepoint exceeds 16-bits and has to be encoded. For that reason, if you're on a new enough runtime, you want to use <see cref="ReadRune(Stream)"/>, which does this same operation but with a type capable of representing the codepoint as a single value.</para>
 		/// </remarks>
 		/// <exception cref="ObjectDisposedException">Methods were called after the stream was closed.</exception>
-		public static Char[] ReadCodepoint(this Stream stream) {
+		public static CodePoint ReadCodePoint(this Stream stream) {
 			Guard.NotNull(stream, nameof(stream));
 			Byte[] sequence = new Byte[4] { 0x00, 0x00, 0x00, 0x00 };
 			Int32 bytes = 1;
@@ -96,14 +96,14 @@ namespace Stringier.Streams {
 			Char[] chars = new Char[2];
 			switch (decoder.GetChars(sequence, 0, bytes, chars, 0)) {
 			case 1:
-				return new[] { chars[0] };
+				return new CodePoint(chars[0]);
 			case 2:
-				return chars;
+				return new SurrogatePair(new CodePoint(chars[0]), new CodePoint(chars[1])).CodePoint;
 			default:
 				goto Error;
 			}
 		Error:
-			return Array.Empty<Char>();
+			return new CodePoint(0xFFFD);
 		}
 
 		/// <summary>
@@ -117,15 +117,8 @@ namespace Stringier.Streams {
 		/// <exception cref="ObjectDisposedException">Methods were called after the stream was closed.</exception>
 		public static Rune ReadRune(this Stream stream) {
 			Guard.NotNull(stream, nameof(stream));
-			Span<Char> chars = stream.ReadCodepoint();
-			switch (chars.Length) {
-			case 1:
-				return new Rune(chars[0]);
-			case 2:
-				return new Rune(chars[0], chars[1]);
-			default:
-				return new Rune();
-			}
+			CodePoint codepoint = stream.ReadCodePoint();
+			return new Rune(codepoint.Value);
 		}
 
 		/// <summary>
@@ -160,16 +153,12 @@ namespace Stringier.Streams {
 		/// <exception cref="ObjectDisposedException">Methods were called after the stream was closed.</exception>
 		public static Boolean TryReadRune(this Stream stream, out Rune rune) {
 			Guard.NotNull(stream, nameof(stream));
-			Span<Char> chars = stream.ReadCodepoint();
-			switch (chars.Length) {
-			case 1:
-				rune = new Rune(chars[0]);
+			CodePoint codepoint = stream.ReadCodePoint();
+			if (codepoint.IsScalarValue) {
+				rune = new Rune(codepoint.Value);
 				return true;
-			case 2:
-				rune = new Rune(chars[0], chars[1]);
-				return true;
-			default:
-				rune = new Rune();
+			} else {
+				rune = Rune.ReplacementChar;
 				return false;
 			}
 		}
