@@ -106,7 +106,6 @@ namespace Stringier.Streams {
 			return Array.Empty<Char>();
 		}
 
-#if NETCOREAPP3_0 || NETCOREAPP3_1
 		/// <summary>
 		/// Reads a <see cref="Rune"/> from the stream and advances the position within the stream by one rune.
 		/// </summary>
@@ -174,7 +173,6 @@ namespace Stringier.Streams {
 				return false;
 			}
 		}
-#endif
 
 		/// <summary>
 		/// Writes a sequence of bytes to the <paramref name="stream"/> and advances the current position within this <paramref name="stream"/> by the number of bytes written.
