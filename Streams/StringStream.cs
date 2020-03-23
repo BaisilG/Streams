@@ -11,6 +11,6 @@ namespace Stringier.Streams {
 		/// Initializes a new non-resizable instance of the <see cref="StringStream"/> class based on the specified <paramref name="string"/>.
 		/// </summary>
 		/// <param name="string">The <see cref="String"/> to stream.</param>
-		public StringStream(String @string) : base(Encoding.UTF8.GetBytes(@string)) { }
+		public StringStream(String @string) : base(System.Text.Encoding.Unicode.GetBytes(@string)) { }
 	}
 }
