@@ -12,6 +12,8 @@ namespace Stringier.Streams {
 		internal class Buffer : IEquatable<Byte[]> {
 			private readonly Int32[] buffer = new Int32[4];
 
+			public Int32 Length { get; internal set; } = 0;
+
 			public Boolean Stale {
 				get => Length == 0;
 				set {
@@ -20,17 +22,14 @@ namespace Stringier.Streams {
 					}
 				}
 			}
-
-			public Int32 Length { get; internal set; } = 0;
-
-			public static Boolean operator ==(Buffer left, Byte[] right) => left.Equals(right);
-
 			public static Boolean operator !=(Buffer left, Byte[] right) => !left.Equals(right);
 
 			public static Buffer operator <<(Buffer buffer, Int32 amount) {
 				buffer.Shift(amount);
 				return buffer;
 			}
+
+			public static Boolean operator ==(Buffer left, Byte[] right) => left.Equals(right);
 
 			public Boolean Equals(Byte[] other) {
 				if (Length < other.Length) {
@@ -44,6 +43,8 @@ namespace Stringier.Streams {
 				return true;
 			}
 
+			public void CopyTo(Span<Int32> destination) => buffer.CopyTo(destination);
+
 			public Int32 Get() {
 				Int32 result = Peek();
 				if (Length > 1) {
@@ -55,23 +56,25 @@ namespace Stringier.Streams {
 			}
 
 			public void Get(out Int32 value) {
-				Peek(out value);
-				Length = 0;
+				value = Get();
 			}
 
 			public void Get(out Int32 first, out Int32 second) {
-				Peek(out first, out second);
-				Length = 0;
+				first = Get();
+				second = Get();
 			}
 
 			public void Get(out Int32 first, out Int32 second, out Int32 third) {
-				Peek(out first, out second, out third);
-				Length = 0;
+				first = Get();
+				second = Get();
+				third = Get();
 			}
 
 			public void Get(out Int32 first, out Int32 second, out Int32 third, out Int32 fourth) {
-				Peek(out first, out second, out third, out fourth);
-				Length = 0;
+				first = Get();
+				second = Get();
+				third = Get();
+				fourth = Get();
 			}
 
 			public Int32 Peek() => buffer[0];
@@ -96,6 +99,15 @@ namespace Stringier.Streams {
 				second = buffer[1];
 				third = buffer[2];
 				fourth = buffer[3];
+			}
+
+			public void Reverse() {
+				Int32 temp = buffer[0];
+				buffer[0] = buffer[3];
+				buffer[3] = temp;
+				temp = buffer[1];
+				buffer[1] = buffer[2];
+				buffer[2] = temp;
 			}
 
 			public void Set(Int32 value) {

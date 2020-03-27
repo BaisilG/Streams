@@ -19,6 +19,9 @@ namespace Stringier.Streams {
 				public UTF32BEEncodingHelper() : base(new Byte[] { 0x00, 0x00, 0xFE, 0xFF }) {
 
 				}
+
+				/// <inheritdoc/>
+				public override Int32 ReadRune(TextStream stream) => throw new NotImplementedException();
 			}
 		}
 	}

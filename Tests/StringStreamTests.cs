@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
 using Stringier.Streams;
+using Defender;
 using Xunit;
 
 namespace Tests {
 	[Collection("Tests")]
-	public class StringStreamTests {
+	public class StringStreamTests : Trial {
 		[Fact]
 		public void Constructor() => new StringStream("hello");
 
