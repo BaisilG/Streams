@@ -4,6 +4,8 @@
 [![Build Status](https://dev.azure.com/p-kell/Stringier/_apis/build/status/Stringier.Streams?branchName=master)](https://dev.azure.com/p-kell/Stringier/_build/latest?definitionId=25&branchName=master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ba68b0653d80420f83931293807e702b)](https://www.codacy.com/gh/Stringier/Streams?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Stringier/Stringier-Streams&amp;utm_campaign=Badge_Grade)
 
+[![Beerpay](https://img.shields.io/beerpay/Entomy/Stringier)](https://beerpay.io/Entomy/Stringier)
+
 **Streams** provides extensions to [`Stream`](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) to make it easier to work with text streams. This includes both new `Stream` types, and extension methods for all streams.
 
 # Documentation:
