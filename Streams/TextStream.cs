@@ -173,7 +173,7 @@ namespace Stringier.Streams {
 		}
 
 		/// <inheritdoc/>
-		public override Int32 Read(Byte[] buffer, Int32 offset, Int32 count) => baseStream.Read(buffer, offset, count);
+		public override Int32 Read(Byte[] buffer, Int32 offset, Int32 count) => Read(buffer.AsSpan(offset, count));
 
 		/// <inheritdoc/>
 		public override Int32 Read(Span<Byte> buffer) {
@@ -195,7 +195,7 @@ namespace Stringier.Streams {
 					val = ReadByte();
 					buffer[i++] = val == -1 ? (Byte)0x00 : (Byte)val;
 				}
-				return 0;
+				return i;
 			} else {
 				//This scenario isn't too bad. The buffer is the same size or larger than what we want to read, so read that part of the buffer.
 				Int32 first, second, third, fourth;
@@ -206,8 +206,8 @@ namespace Stringier.Streams {
 					return 1;
 				case 2:
 					this.buffer.Get(out first, out second);
-					buffer[1] = first == -1 ? (Byte)0x00 : (Byte)first;
-					buffer[2] = second == -1 ? (Byte)0x00 : (Byte)second;
+					buffer[0] = first == -1 ? (Byte)0x00 : (Byte)first;
+					buffer[1] = second == -1 ? (Byte)0x00 : (Byte)second;
 					return 2;
 				case 3:
 					this.buffer.Get(out first, out second, out third);
