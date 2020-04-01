@@ -22,6 +22,7 @@ namespace Stringier.Streams {
 					}
 				}
 			}
+
 			public static Boolean operator !=(Buffer left, Byte[] right) => !left.Equals(right);
 
 			public static Buffer operator <<(Buffer buffer, Int32 amount) {
@@ -30,6 +31,8 @@ namespace Stringier.Streams {
 			}
 
 			public static Boolean operator ==(Buffer left, Byte[] right) => left.Equals(right);
+
+			public void CopyTo(Span<Int32> destination) => buffer.CopyTo(destination);
 
 			public Boolean Equals(Byte[] other) {
 				if (Length < other.Length) {
@@ -42,8 +45,6 @@ namespace Stringier.Streams {
 				}
 				return true;
 			}
-
-			public void CopyTo(Span<Int32> destination) => buffer.CopyTo(destination);
 
 			public Int32 Get() {
 				Int32 result = Peek();

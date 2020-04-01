@@ -14,4 +14,13 @@
     <ProjectReference Include="..\Streams\Streams.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="UTF16LE_English.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="UTF16LE_FakeRussian.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -11,14 +11,14 @@ namespace Stringier.Streams {
 			public static EncodingHelper UTF32LE { get; } = new UTF32LEEncodingHelper();
 
 			internal sealed class UTF32LEEncodingHelper : EncodingHelper {
-				/// <summary>
-				/// The <see cref="Encoding"/> enum representing this helper.
-				/// </summary>
+				/// <inheritdoc/>
+				public override Byte[] BOM => new Byte[] { 0xFF, 0xFE, 0x00, 0x00 };
+
+				/// <inheritdoc/>
 				public override Encoding Enum => Encoding.UTF32LE;
 
-				public UTF32LEEncodingHelper() : base(new Byte[] { 0xFF, 0xFE, 0x00, 0x00 }) {
-
-				}
+				/// <inheritdoc/>
+				public override Int32 ReadChar(TextStream stream) => throw new NotImplementedException();
 
 				/// <inheritdoc/>
 				public override Int32 ReadRune(TextStream stream) => throw new NotImplementedException();

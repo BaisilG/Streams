@@ -119,5 +119,36 @@ namespace Tests {
 			Assert.Equal(0x20, read[0]);
 			Assert.Equal(0x00, read[1]);
 		}
+
+		[Fact]
+		public void ReadChar_UTF16LE() {
+			using TextStream stream = new TextStream(new StringStream("\uFEFFhello world, how are you today?"));
+			Assert.Equal(2, stream.Position);
+			Assert.Equal('h', stream.ReadChar());
+			Assert.Equal(4, stream.Position);
+			Assert.Equal('e', stream.ReadChar());
+			Assert.Equal(6, stream.Position);
+			Assert.Equal('l', stream.ReadChar());
+			Assert.Equal(8, stream.Position);
+			Assert.Equal('l', stream.ReadChar());
+			Assert.Equal(10, stream.Position);
+			Assert.Equal('o', stream.ReadChar());
+		}
+
+		[Fact]
+		public void ReadRune_UTF16LE() {
+			using TextStream stream = new TextStream(new StringStream("\uFEFFG\uD834\uDD1Eabc"));
+			Assert.Equal(2, stream.Position);
+			Assert.Equal('G', stream.ReadRune());
+			Assert.Equal(4, stream.Position);
+			Assert.Equal(0x01D11E, stream.ReadRune());
+			Assert.Equal(8, stream.Position);
+			Assert.Equal('a', stream.ReadRune());
+			Assert.Equal(10, stream.Position);
+			Assert.Equal('b', stream.ReadRune());
+			Assert.Equal(12, stream.Position);
+			Assert.Equal('c', stream.ReadRune());
+			Assert.Equal(14, stream.Position);
+		}
 	}
 }

@@ -238,6 +238,12 @@ namespace Stringier.Streams {
 		public override Int32 ReadByte() => buffer.Stale ? baseStream.ReadByte() : buffer.Get();
 
 		/// <summary>
+		/// Reads a char from the stream and advances the position within the stream by the encoding byte count, or returns -1 if at the end of the stream.
+		/// </summary>
+		/// <returns>The unsigned char cast to an <see cref="Int32"/>, or -1 if at the end of the stream.</returns>
+		public Int32 ReadChar() => helper.ReadChar(this);
+
+		/// <summary>
 		/// Reads a rune from the stream and advances the position within the stream by the encoding byte count, or returns -1 if at the end of the stream.
 		/// </summary>
 		/// <returns>The unsigned rune cast to an <see cref="Int32"/>, or -1 if at the end of the stream.</returns>
