@@ -37,7 +37,7 @@ namespace Stringier.Streams {
 		/// This is stored as a <see cref="Int32"/> to comply with C/C++/C# stream conventions, which use -1 for errors, and to simplify the code in which <see cref="buffer"/> is used.
 		/// </para>
 		/// </remarks>
-		private readonly Buffer buffer = new Buffer();
+		private readonly ITextStreamBuffer buffer = new Buffer();
 
 		/// <summary>
 		/// The encoding helper for this <see cref="TextStream"/>.
@@ -51,23 +51,23 @@ namespace Stringier.Streams {
 		/// <remarks>
 		/// This attempts to determine the encoding automatically, defaulting to <see cref="Encoding.UTF8"/>. It will consume the BOM.
 		/// </remarks>
-		public TextStream(Stream stream) {
+		public TextStream(Stream stream) { 
 			baseStream = stream;
-			FillBuffer();
-			if (buffer == UTF8.BOM) {
-				buffer <<= UTF8.BOM.Length;
+			buffer.Read(baseStream, 4);
+			if (buffer.Equals(UTF8.BOM)) {
+				buffer.ShiftLeft(UTF8.BOM.Length);
 				helper = UTF8;
-			} else if (buffer == UTF32LE.BOM) { // This must be checked before UTF-16LE, even though it's very unlikely
-				buffer <<= UTF32LE.BOM.Length;
+			} else if (buffer.Equals(UTF32LE.BOM)) { // This must be checked before UTF-16LE, even though it's very unlikely
+				buffer.ShiftLeft(UTF32LE.BOM.Length);
 				helper = UTF32LE;
-			} else if (buffer == UTF16LE.BOM) {
-				buffer <<= UTF16LE.BOM.Length;
+			} else if (buffer.Equals(UTF16LE.BOM)) {
+				buffer.ShiftLeft(UTF16LE.BOM.Length);
 				helper = UTF16LE;
-			} else if (buffer == UTF16BE.BOM) {
-				buffer <<= UTF16BE.BOM.Length;
+			} else if (buffer.Equals(UTF16BE.BOM)) {
+				buffer.ShiftLeft(UTF16BE.BOM.Length);
 				helper = UTF16BE;
-			} else if (buffer == UTF32BE.BOM) {
-				buffer <<= UTF32BE.BOM.Length;
+			} else if (buffer.Equals(UTF32BE.BOM)) {
+				buffer.ShiftLeft(UTF32BE.BOM.Length);
 				helper = UTF32BE;
 			} else {
 				// There wasn't a BOM, so use the default.
@@ -167,7 +167,7 @@ namespace Stringier.Streams {
 		/// <returns>The unsigned byte cast to an <see cref="Int32"/>, or -1 if at the end of the stream.</returns>
 		public Int32 PeekByte() {
 			if (buffer.Stale) {
-				buffer.Set(baseStream.ReadByte());
+				buffer.Read(baseStream);
 			}
 			return buffer.Peek();
 		}
@@ -283,10 +283,5 @@ namespace Stringier.Streams {
 
 		/// <inheritdoc/>
 		public override void WriteByte(Byte value) => baseStream.WriteByte(value);
-
-		/// <summary>
-		/// Fills the buffer.
-		/// </summary>
-		private void FillBuffer() => buffer.Set(baseStream.ReadByte(), baseStream.ReadByte(), baseStream.ReadByte(), baseStream.ReadByte());
 	}
 }

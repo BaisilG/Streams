@@ -1,5 +1,5 @@
 ﻿using System;
-using Defender;
+using System.IO;
 
 namespace Stringier.Streams {
 	public sealed partial class TextStream {
@@ -9,11 +9,13 @@ namespace Stringier.Streams {
 		/// <remarks>
 		/// This entire thing is required for peeking and reading the BOM. It's not a performance buffer, so it's very small.
 		/// </remarks>
-		internal class Buffer : IEquatable<Byte[]> {
+		internal class Buffer : ITextStreamBuffer {
 			private readonly Int32[] buffer = new Int32[4];
 
-			public Int32 Length { get; internal set; } = 0;
+			/// <inheritdoc/>
+			public Int32 Length { get; set; } = 0;
 
+			/// <inheritdoc/>
 			public Boolean Stale {
 				get => Length == 0;
 				set {
@@ -23,17 +25,7 @@ namespace Stringier.Streams {
 				}
 			}
 
-			public static Boolean operator !=(Buffer left, Byte[] right) => !left.Equals(right);
-
-			public static Buffer operator <<(Buffer buffer, Int32 amount) {
-				buffer.Shift(amount);
-				return buffer;
-			}
-
-			public static Boolean operator ==(Buffer left, Byte[] right) => left.Equals(right);
-
-			public void CopyTo(Span<Int32> destination) => buffer.CopyTo(destination);
-
+			/// <inheritdoc/>
 			public Boolean Equals(Byte[] other) {
 				if (Length < other.Length) {
 					return false;
@@ -46,98 +38,32 @@ namespace Stringier.Streams {
 				return true;
 			}
 
+			/// <inheritdoc/>
 			public Int32 Get() {
 				Int32 result = Peek();
 				if (Length > 1) {
-					Shift(1);
+					ShiftLeft(1);
 				} else {
 					Length = 0;
 				}
 				return result;
 			}
 
-			public void Get(out Int32 value) {
-				value = Get();
-			}
-
-			public void Get(out Int32 first, out Int32 second) {
-				first = Get();
-				second = Get();
-			}
-
-			public void Get(out Int32 first, out Int32 second, out Int32 third) {
-				first = Get();
-				second = Get();
-				third = Get();
-			}
-
-			public void Get(out Int32 first, out Int32 second, out Int32 third, out Int32 fourth) {
-				first = Get();
-				second = Get();
-				third = Get();
-				fourth = Get();
-			}
-
+			/// <inheritdoc/>
 			public Int32 Peek() => buffer[0];
 
-			public void Peek(out Int32 value) {
-				value = buffer[0];
+			/// <inheritdoc/>
+			public void Read(Stream stream) => buffer[Length++] = stream.ReadByte();
+
+			/// <inheritdoc/>
+			public void Read(Stream stream, Int32 amount) {
+				for (Int32 i = 0; i < amount; i++) {
+					Read(stream);
+				}
 			}
 
-			public void Peek(out Int32 first, out Int32 second) {
-				first = buffer[0];
-				second = buffer[0];
-			}
-
-			public void Peek(out Int32 first, out Int32 second, out Int32 third) {
-				first = buffer[0];
-				second = buffer[1];
-				third = buffer[2];
-			}
-
-			public void Peek(out Int32 first, out Int32 second, out Int32 third, out Int32 fourth) {
-				first = buffer[0];
-				second = buffer[1];
-				third = buffer[2];
-				fourth = buffer[3];
-			}
-
-			public void Reverse() {
-				Int32 temp = buffer[0];
-				buffer[0] = buffer[3];
-				buffer[3] = temp;
-				temp = buffer[1];
-				buffer[1] = buffer[2];
-				buffer[2] = temp;
-			}
-
-			public void Set(Int32 value) {
-				buffer[0] = value;
-				Length = 1;
-			}
-
-			public void Set(Int32 first, Int32 second) {
-				buffer[0] = first;
-				buffer[1] = second;
-				Length = 2;
-			}
-
-			public void Set(Int32 first, Int32 second, Int32 third) {
-				buffer[0] = first;
-				buffer[1] = second;
-				buffer[2] = third;
-				Length = 3;
-			}
-
-			public void Set(Int32 first, Int32 second, Int32 third, Int32 fourth) {
-				buffer[0] = first;
-				buffer[1] = second;
-				buffer[2] = third;
-				buffer[3] = fourth;
-				Length = 4;
-			}
-
-			public void Shift(Int32 amount) {
+			/// <inheritdoc/>
+			public void ShiftLeft(Int32 amount) {
 				if (amount > 4) {
 					amount = 4;
 				}
@@ -149,6 +75,7 @@ namespace Stringier.Streams {
 				}
 			}
 
+			/// <inheritdoc/>
 			public override String ToString() => $"[{buffer[0]}, {buffer[1]}, {buffer[2]}, {buffer[3]}]";
 		}
 	}
