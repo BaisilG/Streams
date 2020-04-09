@@ -9,7 +9,7 @@ namespace Benchmarks {
 	[SimpleJob(RuntimeMoniker.CoreRt31)]
 	[MemoryDiagnoser]
 	public class Read_UTF16LE_File_Benchmarks {
-		[Params("UTF16LE_English.txt", "UTF16LE_FakeRussian.txt")]
+		[Params("UTF16LE_English.txt", "UTF16LE_FakeRussian.txt", "UTF16LE_Random.txt")]
 		public String File { get; set; }
 
 		public Stream baseStream;
