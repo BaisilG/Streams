@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
 using Stringier.Streams;
@@ -8,8 +9,8 @@ namespace Benchmarks {
 	[SimpleJob(RuntimeMoniker.NetCoreApp31)]
 	[SimpleJob(RuntimeMoniker.CoreRt31)]
 	[MemoryDiagnoser]
-	public class Read_UTF16LE_File_Benchmarks {
-		[Params("UTF16LE_English.txt", "UTF16LE_FakeRussian.txt", "UTF16LE_Random.txt")]
+	public class ReadRune_UTF8_File_Benchmarks {
+		[Params("UTF8_English.txt", "UTF8_FakeRussian.txt", "UTF8_Random.txt")]
 		public String File { get; set; }
 
 		public Stream baseStream;
@@ -18,25 +19,21 @@ namespace Benchmarks {
 
 		public StreamReader reader;
 
-		public StreamReader stacked;
-
 		[GlobalSetup]
 		public void GlobalSetup() {
 			baseStream = new FileStream(File, FileMode.Open);
 			stream = new TextStream(baseStream);
 			reader = new StreamReader(baseStream);
-			stacked = new StreamReader(stream);
 		}
 
 		[Benchmark]
 		public void TextStream() {
-			while (stream.ReadChar() >= 0) { }
+			while (stream.ReadRune() >= 0) { }
 		}
 
 		[Benchmark]
-		public void StreamReader() => reader.ReadToEnd();
-
-		[Benchmark]
-		public void Stacked() => stacked.ReadToEnd();
+		public void StreamReader() {
+			foreach (Rune item in reader.ReadToEnd()) { }
+		}
 	}
 }

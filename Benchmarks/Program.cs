@@ -7,9 +7,13 @@ using Console = Consolator.Console;
 namespace Benchmarks {
 	public class Program {
 		internal readonly static KeyChoiceSet MenuChoices = new KeyChoiceSet(" Enter Choice: ",
-			new KeyChoice(ConsoleKey.D1, "Read UTF-16LE File", () => BenchmarkRunner.Run<Read_UTF16LE_File_Benchmarks>()),
-			new KeyChoice(ConsoleKey.D2, "Read UTF-16LE Memory", () => BenchmarkRunner.Run<Read_UTF16LE_Memory_Benchmarks>()),
-			new KeyChoice(ConsoleKey.D3, "StringStream", () => BenchmarkRunner.Run<StringStreamBenchmarks>()),
+			new KeyChoice(ConsoleKey.D1, "ReadChar UTF-8 File", () => BenchmarkRunner.Run<ReadChar_UTF8_File_Benchmarks>()),
+			new KeyChoice(ConsoleKey.D2, "ReadChar UTF-8 Memory", () => BenchmarkRunner.Run<ReadChar_UTF8_Memory_Benchmarks>()),
+			new KeyChoice(ConsoleKey.D3, "ReadChar UTF-16LE File", () => BenchmarkRunner.Run<ReadChar_UTF16LE_File_Benchmarks>()),
+			new KeyChoice(ConsoleKey.D4, "ReadChar UTF-16LE Memory", () => BenchmarkRunner.Run<ReadChar_UTF16LE_Memory_Benchmarks>()),
+			new KeyChoice(ConsoleKey.D5, "ReadRune UTF-8 File", () => BenchmarkRunner.Run<ReadRune_UTF8_File_Benchmarks>()),
+			new KeyChoice(ConsoleKey.D6, "ReadRune UTF-8 Memory", () => BenchmarkRunner.Run<ReadRune_UTF8_Memory_Benchmarks>()),
+			new KeyChoice(ConsoleKey.D7, "StringStream", () => BenchmarkRunner.Run<StringStreamBenchmarks>()),
 			new BackKeyChoice(ConsoleKey.Q, "Quit", () => Environment.Exit(0)));
 
 		public static void Main() {
