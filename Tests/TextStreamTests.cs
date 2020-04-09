@@ -7,89 +7,82 @@ using Xunit;
 namespace Tests {
 	[Collection("Tests")]
 	public class TextStreamTests : Trial {
-		[Fact]
-		public void Constructor() {
-			var stream = new TextStream(new StringStream("hello world!"));
-			Assert.Equal(Encoding.UTF8, stream.Encoding);
-			stream.Dispose();
-			stream = new TextStream(new MemoryStream(new Byte[] { 0xEF, 0xBB, 0xBF, 0x68, 0x65, 0x6C, 0x6C, 0x6F, 0x20, 0x77, 0x6F, 0x72, 0x6C, 0x64 }));
-			Assert.Equal(Encoding.UTF8, stream.Encoding);
-			stream.Dispose();
-			stream = new TextStream(new MemoryStream(new Byte[] { 0xFF, 0xFE, 0x68, 0x00, 0x65, 0x00, 0x6C, 0x00, 0x6C, 0x00, 0x6F, 0x00, 0x20, 0x00, 0x77, 0x00, 0x6F, 0x00, 0x72, 0x00, 0x6C, 0x00, 0x64, 0x00 }));
-			Assert.Equal(Encoding.UTF16LE, stream.Encoding);
-			stream.Dispose();
-			stream = new TextStream(new MemoryStream(new Byte[] { 0xFE, 0xFF, 0x00, 0x68, 0x00, 0x65, 0x00, 0x6C, 0x00, 0x6C, 0x00, 0x6F, 0x00, 0x20, 0x00, 0x77, 0x00, 0x6F, 0x00, 0x72, 0x00, 0x6C, 0x00, 0x64 }));
-			Assert.Equal(Encoding.UTF16BE, stream.Encoding);
-			stream.Dispose();
+		[Theory]
+		[ClassData(typeof(TextStreamConstructorData))]
+		public void Constructor(Stream baseStream, IReadBuffer? readBuffer, IWriteBuffer? writeBuffer, Encoding encoding) {
+			using TextStream stream = readBuffer is null ? new TextStream(baseStream) : new TextStream(baseStream, readBuffer, writeBuffer);
+			Assert.Equal(encoding, stream.Encoding);
 		}
 
-		[Fact]
-		public void CanRead() {
-			using StringStream inner = new StringStream("hello world");
-			using TextStream stream = new TextStream(inner);
-			Assert.Equal(inner.CanRead, stream.CanRead);
+		[Theory]
+		[ClassData(typeof(CanReadData))]
+		public void CanRead(Stream baseStream, IReadBuffer? readBuffer, IWriteBuffer? writeBuffer, Boolean expected) {
+			using TextStream stream = readBuffer is null ? new TextStream(baseStream) : new TextStream(baseStream, readBuffer, writeBuffer);
+			Assert.Equal(expected, stream.CanRead);
 		}
 
-		[Fact]
-		public void CanSeek() {
-			using StringStream inner = new StringStream("hello world");
-			using TextStream stream = new TextStream(inner);
-			Assert.Equal(inner.CanSeek, stream.CanSeek);
+		[Theory]
+		[ClassData(typeof(CanSeekData))]
+		public void CanSeek(Stream baseStream, IReadBuffer? readBuffer, IWriteBuffer? writeBuffer, Boolean expected) {
+			using TextStream stream = readBuffer is null ? new TextStream(baseStream) : new TextStream(baseStream, readBuffer, writeBuffer);
+			Assert.Equal(expected, stream.CanSeek);
 		}
 
-		[Fact]
-		public void CanWrite() {
-			using StringStream inner = new StringStream("hello world");
-			using TextStream stream = new TextStream(inner);
-			Assert.Equal(inner.CanWrite, stream.CanWrite);
+		[Theory]
+		[ClassData(typeof(CanWriteData))]
+		public void CanWrite(Stream baseStream, IReadBuffer? readBuffer, IWriteBuffer? writeBuffer, Boolean expected) {
+			using TextStream stream = writeBuffer is null ? new TextStream(baseStream) : new TextStream(baseStream, readBuffer, writeBuffer);
+			Assert.Equal(expected, stream.CanWrite);
 		}
 
-		[Fact]
-		public void PeekByte() {
-			using TextStream stream = new TextStream(new StringStream("hello world"));
-			Assert.Equal(0x68, stream.PeekByte());
-			Assert.Equal(0x68, stream.PeekByte());
-			Assert.Equal(0x68, stream.ReadByte());
-			Assert.Equal(0x00, stream.ReadByte());
-			Assert.Equal(0x65, stream.ReadByte());
-			Assert.Equal(0x00, stream.PeekByte());
-			Assert.Equal(0x00, stream.ReadByte());
-			Assert.Equal(0x6C, stream.PeekByte());
-			Assert.Equal(0x6C, stream.ReadByte());
+		[Theory]
+		[ClassData(typeof(PeekByteData))]
+		public void PeekByte(Stream baseStream, IReadBuffer? readBuffer, IWriteBuffer? writeBuffer, Int32 p1, Int32 p2, Int32 p3, Int32 p4, Int32 p5, Int32 p6, Int32 p7, Int32 p8, Int32 p9) {
+			using TextStream stream = readBuffer is null ? new TextStream(baseStream) : new TextStream(baseStream, readBuffer, writeBuffer);
+			Assert.Equal(p1, stream.PeekByte());
+			Assert.Equal(p2, stream.PeekByte());
+			Assert.Equal(p3, stream.ReadByte());
+			Assert.Equal(p4, stream.ReadByte());
+			Assert.Equal(p5, stream.ReadByte());
+			Assert.Equal(p6, stream.PeekByte());
+			Assert.Equal(p7, stream.ReadByte());
+			Assert.Equal(p8, stream.PeekByte());
+			Assert.Equal(p9, stream.ReadByte());
 		}
 
-		[Fact]
-		public void Position() {
-			using TextStream stream = new TextStream(new StringStream("hello world"));
-			Assert.Equal(0, stream.Position);
+		[Theory]
+		[ClassData(typeof(PositionData))]
+		public void Position(Stream baseStream, IReadBuffer? readBuffer, IWriteBuffer? writeBuffer, Int32 p1, Int32 p2, Int32 p3, Int32 p4, Int32 p5, Int32 p6, Int32 p7, Int32 p8, Int32 p9, Int32 p10, Int32 p11, Int32 p12, Int32 p13, Int32 p14, Int32 p15) {
+			using TextStream stream = readBuffer is null ? new TextStream(baseStream) : new TextStream(baseStream, readBuffer, writeBuffer);
+			Assert.Equal(p1, stream.Position);
 			_ = stream.ReadByte();
-			Assert.Equal(1, stream.Position);
+			Assert.Equal(p2, stream.Position);
 			_ = stream.ReadByte();
-			Assert.Equal(2, stream.Position);
+			Assert.Equal(p3, stream.Position);
 			_ = stream.ReadByte();
-			Assert.Equal(3, stream.Position);
+			Assert.Equal(p4, stream.Position);
 			_ = stream.ReadByte();
-			Assert.Equal(4, stream.Position);
+			Assert.Equal(p5, stream.Position);
 			_ = stream.ReadByte();
-			Assert.Equal(5, stream.Position);
+			Assert.Equal(p6, stream.Position);
 			_ = stream.Seek(0, SeekOrigin.Begin);
-			Assert.Equal(0, stream.Position);
+			Assert.Equal(p7, stream.Position);
 			_ = stream.ReadByte();
-			Assert.Equal(1, stream.Position);
+			Assert.Equal(p8, stream.Position);
 			_ = stream.ReadByte();
-			Assert.Equal(2, stream.Position);
+			Assert.Equal(p9, stream.Position);
 			_ = stream.PeekByte();
-			Assert.Equal(2, stream.Position);
+			Assert.Equal(p10, stream.Position);
 			_ = stream.PeekByte();
-			Assert.Equal(2, stream.Position);
+			Assert.Equal(p11, stream.Position);
 			_ = stream.ReadByte();
-			Assert.Equal(3, stream.Position);
+			Assert.Equal(p12, stream.Position);
 			_ = stream.PeekByte();
-			Assert.Equal(3, stream.Position);
+			Assert.Equal(p13, stream.Position);
 			_ = stream.ReadByte();
-			Assert.Equal(4, stream.Position);
+			Assert.Equal(p14, stream.Position);
 			_ = stream.ReadByte();
-			Assert.Equal(5, stream.Position);
+			Assert.Equal(p15, stream.Position);
 		}
 
 		[Fact]
@@ -120,35 +113,36 @@ namespace Tests {
 			Assert.Equal(0x00, read[1]);
 		}
 
-		[Fact]
-		public void ReadChar_UTF16LE() {
-			using TextStream stream = new TextStream(new StringStream("\uFEFFhello world, how are you today?"));
-			Assert.Equal(2, stream.Position);
-			Assert.Equal('h', stream.ReadChar());
-			Assert.Equal(4, stream.Position);
-			Assert.Equal('e', stream.ReadChar());
-			Assert.Equal(6, stream.Position);
-			Assert.Equal('l', stream.ReadChar());
-			Assert.Equal(8, stream.Position);
-			Assert.Equal('l', stream.ReadChar());
-			Assert.Equal(10, stream.Position);
-			Assert.Equal('o', stream.ReadChar());
+		[Theory]
+		[ClassData(typeof(ReadCharData))]
+		public void ReadChar(Stream baseStream, IReadBuffer? readBuffer, IWriteBuffer? writeBuffer, Int32 p1, Int32 c1, Int32 p2, Int32 c2, Int32 p3, Int32 c3, Int32 p4, Int32 c4, Int32 p5, Int32 c5) {
+			using TextStream stream = readBuffer is null ? new TextStream(baseStream) : new TextStream(baseStream, readBuffer, writeBuffer);
+			Assert.Equal(p1, stream.Position);
+			Assert.Equal(c1, stream.ReadChar());
+			Assert.Equal(p2, stream.Position);
+			Assert.Equal(c2, stream.ReadChar());
+			Assert.Equal(p3, stream.Position);
+			Assert.Equal(c3, stream.ReadChar());
+			Assert.Equal(p4, stream.Position);
+			Assert.Equal(c4, stream.ReadChar());
+			Assert.Equal(p5, stream.Position);
+			Assert.Equal(c5, stream.ReadChar());
 		}
 
-		[Fact]
-		public void ReadRune_UTF16LE() {
-			using TextStream stream = new TextStream(new StringStream("\uFEFFG\uD834\uDD1Eabc"));
-			Assert.Equal(2, stream.Position);
-			Assert.Equal('G', stream.ReadRune());
-			Assert.Equal(4, stream.Position);
-			Assert.Equal(0x01D11E, stream.ReadRune());
-			Assert.Equal(8, stream.Position);
-			Assert.Equal('a', stream.ReadRune());
-			Assert.Equal(10, stream.Position);
-			Assert.Equal('b', stream.ReadRune());
-			Assert.Equal(12, stream.Position);
-			Assert.Equal('c', stream.ReadRune());
-			Assert.Equal(14, stream.Position);
+		[Theory]
+		[ClassData(typeof(ReadRuneData))]
+		public void ReadRune(Stream baseStream, IReadBuffer? readBuffer, IWriteBuffer? writeBuffer, Int32 p1, Int32 c1, Int32 p2, Int32 c2, Int32 p3, Int32 c3, Int32 p4, Int32 c4, Int32 p5, Int32 c5) {
+			using TextStream stream = readBuffer is null ? new TextStream(baseStream) : new TextStream(baseStream, readBuffer, writeBuffer);
+			Assert.Equal(p1, stream.Position);
+			Assert.Equal(c1, stream.ReadRune());
+			Assert.Equal(p2, stream.Position);
+			Assert.Equal(c2, stream.ReadRune());
+			Assert.Equal(p3, stream.Position);
+			Assert.Equal(c3, stream.ReadRune());
+			Assert.Equal(p4, stream.Position);
+			Assert.Equal(c4, stream.ReadRune());
+			Assert.Equal(p5, stream.Position);
+			Assert.Equal(c5, stream.ReadRune());
 		}
 	}
 }

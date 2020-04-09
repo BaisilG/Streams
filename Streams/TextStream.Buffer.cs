@@ -9,8 +9,17 @@ namespace Stringier.Streams {
 		/// <remarks>
 		/// This entire thing is required for peeking and reading the BOM. It's not a performance buffer, so it's very small.
 		/// </remarks>
-		internal class Buffer : ITextStreamBuffer {
-			private readonly Int32[] buffer = new Int32[4];
+		internal class Buffer : IReadBuffer, IWriteBuffer {
+			private readonly Byte[] buffer = new Byte[4];
+
+			/// <inheritdoc/>
+			public Boolean CanRead { get; }
+
+			/// <inheritdoc/>
+			public Boolean CanSeek { get; }
+
+			/// <inheritdoc/>
+			public Boolean CanWrite { get; }
 
 			/// <inheritdoc/>
 			public Int32 Length { get; set; } = 0;
@@ -50,10 +59,15 @@ namespace Stringier.Streams {
 			}
 
 			/// <inheritdoc/>
-			public Int32 Peek() => buffer[0];
+			public Int32 Peek() => Length > 0 ? buffer[0] : -1;
 
 			/// <inheritdoc/>
-			public void Read(Stream stream) => buffer[Length++] = stream.ReadByte();
+			public void Read(Stream stream) {
+				Int32 read = stream.ReadByte();
+				if (read >= 0) {
+					buffer[Length++] = (Byte)read;
+				}
+			}
 
 			/// <inheritdoc/>
 			public void Read(Stream stream, Int32 amount) {

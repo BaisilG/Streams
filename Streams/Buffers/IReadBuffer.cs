@@ -1,12 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace Stringier.Streams {
 	/// <summary>
-	/// Represents a buffer for <see cref="TextStream"/>.
+	/// Represents a read buffer for <see cref="TextStream"/>.
 	/// </summary>
-	public interface ITextStreamBuffer : IEquatable<Byte[]> {
+	public interface IReadBuffer : IEquatable<Byte[]> {
+		/// <summary>
+		/// Gets a value that indicates whether the current buffer can be read from.
+		/// </summary>
+		public Boolean CanRead { get; }
+
+		/// <summary>
+		/// Gets a value that indicates whether the current buffer can be seeked.
+		/// </summary>
+		public Boolean CanSeek { get; }
+
 		/// <summary>
 		/// The length of the buffer; the amount of bytes it is currently holding.
 		/// </summary>

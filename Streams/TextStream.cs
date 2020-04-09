@@ -27,17 +27,14 @@ namespace Stringier.Streams {
 		private readonly Stream baseStream;
 
 		/// <summary>
-		/// A byte buffer used to enable peeking.
+		/// The read buffer.
 		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// In most cases this won't even be used, and when it is will be a single, specific, byte. BOM determination requires multiple bytes, however, so in those cases it will be a sequence.
-		/// </para>
-		/// <para>
-		/// This is stored as a <see cref="Int32"/> to comply with C/C++/C# stream conventions, which use -1 for errors, and to simplify the code in which <see cref="buffer"/> is used.
-		/// </para>
-		/// </remarks>
-		private readonly ITextStreamBuffer buffer = new Buffer();
+		private readonly IReadBuffer readBuffer;
+
+		/// <summary>
+		/// The write buffer.
+		/// </summary>
+		private readonly IWriteBuffer writeBuffer;
 
 		/// <summary>
 		/// The encoding helper for this <see cref="TextStream"/>.
@@ -51,23 +48,33 @@ namespace Stringier.Streams {
 		/// <remarks>
 		/// This attempts to determine the encoding automatically, defaulting to <see cref="Encoding.UTF8"/>. It will consume the BOM.
 		/// </remarks>
-		public TextStream(Stream stream) { 
+		public TextStream(Stream stream) : this(stream, null, null) { }
+
+		/// <summary>
+		/// Initialize a new instance of the <see cref="TextStream"/> class.
+		/// </summary>
+		/// <param name="stream">The underlying <see cref="Stream"/>.</param>
+		/// <param name="readBuffer">The read buffer.</param>
+		/// <param name="writeBuffer">The write buffer.</param>
+		public TextStream(Stream stream, IReadBuffer? readBuffer, IWriteBuffer? writeBuffer) {
 			baseStream = stream;
-			buffer.Read(baseStream, 4);
-			if (buffer.Equals(UTF8.BOM)) {
-				buffer.ShiftLeft(UTF8.BOM.Length);
+			this.readBuffer = readBuffer ?? new Buffer();
+			this.writeBuffer = writeBuffer ?? new Buffer();
+			this.readBuffer.Read(baseStream, 4);
+			if (this.readBuffer.Equals(UTF8.BOM)) {
+				this.readBuffer.ShiftLeft(UTF8.BOM.Length);
 				helper = UTF8;
-			} else if (buffer.Equals(UTF32LE.BOM)) { // This must be checked before UTF-16LE, even though it's very unlikely
-				buffer.ShiftLeft(UTF32LE.BOM.Length);
+			} else if (this.readBuffer.Equals(UTF32LE.BOM)) { // This must be checked before UTF-16LE, even though it's very unlikely
+				this.readBuffer.ShiftLeft(UTF32LE.BOM.Length);
 				helper = UTF32LE;
-			} else if (buffer.Equals(UTF16LE.BOM)) {
-				buffer.ShiftLeft(UTF16LE.BOM.Length);
+			} else if (this.readBuffer.Equals(UTF16LE.BOM)) {
+				this.readBuffer.ShiftLeft(UTF16LE.BOM.Length);
 				helper = UTF16LE;
-			} else if (buffer.Equals(UTF16BE.BOM)) {
-				buffer.ShiftLeft(UTF16BE.BOM.Length);
+			} else if (this.readBuffer.Equals(UTF16BE.BOM)) {
+				this.readBuffer.ShiftLeft(UTF16BE.BOM.Length);
 				helper = UTF16BE;
-			} else if (buffer.Equals(UTF32BE.BOM)) {
-				buffer.ShiftLeft(UTF32BE.BOM.Length);
+			} else if (this.readBuffer.Equals(UTF32BE.BOM)) {
+				this.readBuffer.ShiftLeft(UTF32BE.BOM.Length);
 				helper = UTF32BE;
 			} else {
 				// There wasn't a BOM, so use the default.
@@ -97,7 +104,7 @@ namespace Stringier.Streams {
 
 		/// <inheritdoc/>
 		public override Int64 Position {
-			get => buffer.Stale ? baseStream.Position : baseStream.Position - buffer.Length;
+			get => readBuffer.Stale ? baseStream.Position : baseStream.Position - readBuffer.Length;
 			set => baseStream.Position = value;
 		}
 
@@ -166,10 +173,10 @@ namespace Stringier.Streams {
 		/// </summary>
 		/// <returns>The unsigned byte cast to an <see cref="Int32"/>, or -1 if at the end of the stream.</returns>
 		public Int32 PeekByte() {
-			if (buffer.Stale) {
-				buffer.Read(baseStream);
+			if (readBuffer.Stale) {
+				readBuffer.Read(baseStream);
 			}
-			return buffer.Peek();
+			return readBuffer.Peek();
 		}
 
 		/// <inheritdoc/>
@@ -177,17 +184,17 @@ namespace Stringier.Streams {
 
 		/// <inheritdoc/>
 		public override Int32 Read(Span<Byte> buffer) {
-			if (this.buffer.Stale) {
+			if (this.readBuffer.Stale) {
 				return baseStream.Read(buffer);
 			}
-			if (this.buffer.Length < buffer.Length) {
+			if (this.readBuffer.Length < buffer.Length) {
 				//This scenario sucks. We have to read partially from the buffer, and the remaining amount from the stream
 				Int32 val;
 				Int32 i = 0;
 				Int32 r = buffer.Length;
 				// Read from the buffer
-				while (i < this.buffer.Length && r-- > 0) {
-					val = this.buffer.Get();
+				while (i < this.readBuffer.Length && r-- > 0) {
+					val = this.readBuffer.Get();
 					buffer[i++] = val == -1 ? (Byte)0x00 : (Byte)val;
 				}
 				// Read from the stream
@@ -201,22 +208,22 @@ namespace Stringier.Streams {
 				Int32 first, second, third, fourth;
 				switch (buffer.Length) {
 				case 1:
-					this.buffer.Get(out first);
+					this.readBuffer.Get(out first);
 					buffer[0] = first == -1 ? (Byte)0x00 : (Byte)first;
 					return 1;
 				case 2:
-					this.buffer.Get(out first, out second);
+					this.readBuffer.Get(out first, out second);
 					buffer[0] = first == -1 ? (Byte)0x00 : (Byte)first;
 					buffer[1] = second == -1 ? (Byte)0x00 : (Byte)second;
 					return 2;
 				case 3:
-					this.buffer.Get(out first, out second, out third);
+					this.readBuffer.Get(out first, out second, out third);
 					buffer[0] = first == -1 ? (Byte)0x00 : (Byte)first;
 					buffer[1] = second == -1 ? (Byte)0x00 : (Byte)second;
 					buffer[2] = third == -1 ? (Byte)0x00 : (Byte)third;
 					return 3;
 				case 4:
-					this.buffer.Get(out first, out second, out third, out fourth);
+					this.readBuffer.Get(out first, out second, out third, out fourth);
 					buffer[0] = first == -1 ? (Byte)0x00 : (Byte)first;
 					buffer[1] = second == -1 ? (Byte)0x00 : (Byte)second;
 					buffer[2] = third == -1 ? (Byte)0x00 : (Byte)third;
@@ -235,7 +242,7 @@ namespace Stringier.Streams {
 		public override Task<Int32> ReadAsync(Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken) => baseStream.ReadAsync(buffer, offset, count, cancellationToken);
 
 		/// <inheritdoc/>
-		public override Int32 ReadByte() => buffer.Stale ? baseStream.ReadByte() : buffer.Get();
+		public override Int32 ReadByte() => readBuffer.Stale ? baseStream.ReadByte() : readBuffer.Get();
 
 		/// <summary>
 		/// Reads a char from the stream and advances the position within the stream by the encoding byte count, or returns -1 if at the end of the stream.
@@ -253,10 +260,10 @@ namespace Stringier.Streams {
 		public override Int64 Seek(Int64 offset, SeekOrigin origin) {
 			switch (origin) {
 			case SeekOrigin.Current:
-				if (buffer.Stale) {
+				if (readBuffer.Stale) {
 					goto default;
 				} else {
-					return baseStream.Seek(offset + buffer.Length, origin);
+					return baseStream.Seek(offset + readBuffer.Length, origin);
 				}
 			default:
 				return baseStream.Seek(offset, origin);
