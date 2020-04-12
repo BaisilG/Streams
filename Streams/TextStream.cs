@@ -58,8 +58,8 @@ namespace Stringier.Streams {
 		/// <param name="writeBuffer">The write buffer.</param>
 		public TextStream(Stream stream, IReadBuffer? readBuffer, IWriteBuffer? writeBuffer) {
 			baseStream = stream;
-			this.readBuffer = readBuffer ?? new Buffer();
-			this.writeBuffer = writeBuffer ?? new Buffer();
+			this.readBuffer = readBuffer ?? new PassthroughBuffer();
+			this.writeBuffer = writeBuffer ?? new PassthroughBuffer();
 			this.readBuffer.Read(baseStream, 4);
 			if (this.readBuffer.Equals(UTF8.BOM)) {
 				this.readBuffer.ShiftLeft(UTF8.BOM.Length);
