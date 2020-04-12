@@ -3,7 +3,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Defender;
-using static Stringier.Streams.TextStream.EncodingHelper;
 
 namespace Stringier.Streams {
 	/// <summary>
@@ -61,24 +60,24 @@ namespace Stringier.Streams {
 			this.readBuffer = readBuffer ?? new PassthroughBuffer();
 			this.writeBuffer = writeBuffer ?? new PassthroughBuffer();
 			this.readBuffer.Read(baseStream, 4);
-			if (this.readBuffer.Equals(UTF8.BOM)) {
-				this.readBuffer.ShiftLeft(UTF8.BOM.Length);
-				helper = UTF8;
-			} else if (this.readBuffer.Equals(UTF32LE.BOM)) { // This must be checked before UTF-16LE, even though it's very unlikely
-				this.readBuffer.ShiftLeft(UTF32LE.BOM.Length);
-				helper = UTF32LE;
-			} else if (this.readBuffer.Equals(UTF16LE.BOM)) {
-				this.readBuffer.ShiftLeft(UTF16LE.BOM.Length);
-				helper = UTF16LE;
-			} else if (this.readBuffer.Equals(UTF16BE.BOM)) {
-				this.readBuffer.ShiftLeft(UTF16BE.BOM.Length);
-				helper = UTF16BE;
-			} else if (this.readBuffer.Equals(UTF32BE.BOM)) {
-				this.readBuffer.ShiftLeft(UTF32BE.BOM.Length);
-				helper = UTF32BE;
+			if (this.readBuffer.Equals(Utf8.BOM)) {
+				this.readBuffer.ShiftLeft(Utf8.BOM.Length);
+				helper = new Utf8();
+			} else if (this.readBuffer.Equals(Utf32LE.BOM)) { // This must be checked before UTF-16LE, even though it's very unlikely
+				this.readBuffer.ShiftLeft(Utf32LE.BOM.Length);
+				helper = new Utf32LE();
+			} else if (this.readBuffer.Equals(Utf16LE.BOM)) {
+				this.readBuffer.ShiftLeft(Utf16LE.BOM.Length);
+				helper = new Utf16LE();
+			} else if (this.readBuffer.Equals(Utf16BE.BOM)) {
+				this.readBuffer.ShiftLeft(Utf16BE.BOM.Length);
+				helper = new Utf16BE();
+			} else if (this.readBuffer.Equals(Utf32BE.BOM)) {
+				this.readBuffer.ShiftLeft(Utf32BE.BOM.Length);
+				helper = new Utf32BE();
 			} else {
 				// There wasn't a BOM, so use the default.
-				helper = UTF8;
+				helper = new Utf8();
 			}
 		}
 
