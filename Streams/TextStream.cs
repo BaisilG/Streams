@@ -82,16 +82,16 @@ namespace Stringier.Streams {
 		}
 
 		/// <inheritdoc/>
-		public override Boolean CanRead => baseStream.CanRead;
+		public override Boolean CanRead => readBuffer.CanRead || baseStream.CanRead;
 
 		/// <inheritdoc/>
-		public override Boolean CanSeek => baseStream.CanSeek;
+		public override Boolean CanSeek => readBuffer.CanSeek || baseStream.CanSeek;
 
 		/// <inheritdoc/>
 		public override Boolean CanTimeout => baseStream.CanTimeout;
 
 		/// <inheritdoc/>
-		public override Boolean CanWrite => baseStream.CanWrite;
+		public override Boolean CanWrite => writeBuffer.CanWrite || baseStream.CanWrite;
 
 		/// <summary>
 		/// The encoding of a <see cref="TextStream"/>.

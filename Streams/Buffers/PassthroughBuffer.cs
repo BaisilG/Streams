@@ -8,17 +8,17 @@ namespace Stringier.Streams {
 	/// <remarks>
 	/// This entire thing is required for peeking and reading the BOM. It's not a performance buffer, so it's very small. Otherwise, all operations pass-through to the base stream, such that no buffering is done.
 	/// </remarks>
-	internal class PassthroughBuffer : IReadBuffer, IWriteBuffer {
+	internal sealed class PassthroughBuffer : IReadBuffer, IWriteBuffer {
 		private readonly Byte[] buffer = new Byte[4];
 
 		/// <inheritdoc/>
-		public Boolean CanRead { get; }
+		public Boolean CanRead => buffer.Length > 0;
 
 		/// <inheritdoc/>
-		public Boolean CanSeek { get; }
+		public Boolean CanSeek => buffer.Length > 0;
 
 		/// <inheritdoc/>
-		public Boolean CanWrite { get; }
+		public Boolean CanWrite => false;
 
 		/// <inheritdoc/>
 		public Int32 Length { get; set; } = 0;
