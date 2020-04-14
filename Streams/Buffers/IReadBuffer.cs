@@ -34,10 +34,23 @@ namespace Stringier.Streams {
 		}
 
 		/// <summary>
+		/// The stream being buffered.
+		/// </summary>
+		public Stream Stream { get; set; }
+
+		/// <summary>
 		/// Gets the first byte in the buffer, then shifts it off.
 		/// </summary>
 		/// <returns>The byte, cast to a <see cref="Int32"/>.</returns>
-		public Int32 Get();
+		public Int32 Get() {
+			Int32 result = Peek();
+			if (Length > 1) {
+				ShiftLeft(1);
+			} else {
+				Length = 0;
+			}
+			return result;
+		}
 
 		/// <summary>
 		/// Gets the first byte in the buffer, then shifts it off.
@@ -90,16 +103,17 @@ namespace Stringier.Streams {
 		/// <summary>
 		/// Reads a byte into the buffer.
 		/// </summary>
-		/// <param name="stream">The stream to read from.</param>
-		public void Read(Stream stream);
+		public void Read();
 
 		/// <summary>
 		/// Reads <paramref name="amount"/> bytes into the buffer.
 		/// </summary>
-		/// <param name="stream">The stream to read from.</param>
 		/// <param name="amount">The amount of bytes to read.</param>
-		public void Read(Stream stream, Int32 amount);
-
+		public void Read(Int32 amount) {
+			for (Int32 i = 0; i < amount; i++) {
+				Read();
+			}
+		}
 		/// <summary>
 		/// Shifts the contents of the buffer left by <paramref name="amount"/>.
 		/// </summary>

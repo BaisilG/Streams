@@ -9,13 +9,13 @@ namespace Stringier.Streams {
 	/// This entire thing is required for peeking and reading the BOM. It's not a performance buffer, so it's very small. Otherwise, all operations pass-through to the base stream, such that no buffering is done.
 	/// </remarks>
 	internal sealed class PassthroughBuffer : IReadBuffer, IWriteBuffer {
-		private readonly Byte[] buffer = new Byte[4];
+		private readonly Byte[] Buffer = new Byte[4];
 
 		/// <inheritdoc/>
-		public Boolean CanRead => buffer.Length > 0;
+		public Boolean CanRead => Buffer.Length > 0;
 
 		/// <inheritdoc/>
-		public Boolean CanSeek => buffer.Length > 0;
+		public Boolean CanSeek => Buffer.Length > 0;
 
 		/// <inheritdoc/>
 		public Boolean CanWrite => false;
@@ -34,12 +34,15 @@ namespace Stringier.Streams {
 		}
 
 		/// <inheritdoc/>
+		public Stream Stream { get; set; }
+
+		/// <inheritdoc/>
 		public Boolean Equals(Byte[] other) {
 			if (Length < other.Length) {
 				return false;
 			}
 			for (Int32 i = 0; i < other.Length; i++) {
-				if (buffer[i] != other[i]) {
+				if (Buffer[i] != other[i]) {
 					return false;
 				}
 			}
@@ -47,31 +50,13 @@ namespace Stringier.Streams {
 		}
 
 		/// <inheritdoc/>
-		public Int32 Get() {
-			Int32 result = Peek();
-			if (Length > 1) {
-				ShiftLeft(1);
-			} else {
-				Length = 0;
-			}
-			return result;
-		}
+		public Int32 Peek() => Length > 0 ? Buffer[0] : -1;
 
 		/// <inheritdoc/>
-		public Int32 Peek() => Length > 0 ? buffer[0] : -1;
-
-		/// <inheritdoc/>
-		public void Read(Stream stream) {
-			Int32 read = stream.ReadByte();
+		public void Read() {
+			Int32 read = Stream.ReadByte();
 			if (read >= 0) {
-				buffer[Length++] = (Byte)read;
-			}
-		}
-
-		/// <inheritdoc/>
-		public void Read(Stream stream, Int32 amount) {
-			for (Int32 i = 0; i < amount; i++) {
-				Read(stream);
+				Buffer[Length++] = (Byte)read;
 			}
 		}
 
@@ -81,14 +66,14 @@ namespace Stringier.Streams {
 				amount = 4;
 			}
 			for (Int32 i = 0; i < amount; i++) {
-				buffer[0] = buffer[1];
-				buffer[1] = buffer[2];
-				buffer[2] = buffer[3];
+				Buffer[0] = Buffer[1];
+				Buffer[1] = Buffer[2];
+				Buffer[2] = Buffer[3];
 				Length--;
 			}
 		}
 
 		/// <inheritdoc/>
-		public override String ToString() => $"[{buffer[0]}, {buffer[1]}, {buffer[2]}, {buffer[3]}]";
+		public override String ToString() => $"[{Buffer[0]}, {Buffer[1]}, {Buffer[2]}, {Buffer[3]}]";
 	}
 }

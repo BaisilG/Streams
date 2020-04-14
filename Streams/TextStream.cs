@@ -23,22 +23,22 @@ namespace Stringier.Streams {
 		/// <summary>
 		/// The underlying <see cref="Stream"/>.
 		/// </summary>
-		private readonly Stream baseStream;
+		private readonly Stream BaseStream;
 
 		/// <summary>
 		/// The read buffer.
 		/// </summary>
-		private readonly IReadBuffer readBuffer;
+		private readonly IReadBuffer ReadBuffer;
 
 		/// <summary>
 		/// The write buffer.
 		/// </summary>
-		private readonly IWriteBuffer writeBuffer;
+		private readonly IWriteBuffer WriteBuffer;
 
 		/// <summary>
 		/// The encoding helper for this <see cref="TextStream"/>.
 		/// </summary>
-		private readonly EncodingHelper helper;
+		private readonly EncodingHelper Helper;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TextStream"/> class.
@@ -56,126 +56,128 @@ namespace Stringier.Streams {
 		/// <param name="readBuffer">The read buffer.</param>
 		/// <param name="writeBuffer">The write buffer.</param>
 		public TextStream(Stream stream, IReadBuffer? readBuffer, IWriteBuffer? writeBuffer) {
-			baseStream = stream;
-			this.readBuffer = readBuffer ?? new PassthroughBuffer();
-			this.writeBuffer = writeBuffer ?? new PassthroughBuffer();
-			this.readBuffer.Read(baseStream, 4);
-			if (this.readBuffer.Equals(Utf8.BOM)) {
-				this.readBuffer.ShiftLeft(Utf8.BOM.Length);
-				helper = new Utf8();
-			} else if (this.readBuffer.Equals(Utf32LE.BOM)) { // This must be checked before UTF-16LE, even though it's very unlikely
-				this.readBuffer.ShiftLeft(Utf32LE.BOM.Length);
-				helper = new Utf32LE();
-			} else if (this.readBuffer.Equals(Utf16LE.BOM)) {
-				this.readBuffer.ShiftLeft(Utf16LE.BOM.Length);
-				helper = new Utf16LE();
-			} else if (this.readBuffer.Equals(Utf16BE.BOM)) {
-				this.readBuffer.ShiftLeft(Utf16BE.BOM.Length);
-				helper = new Utf16BE();
-			} else if (this.readBuffer.Equals(Utf32BE.BOM)) {
-				this.readBuffer.ShiftLeft(Utf32BE.BOM.Length);
-				helper = new Utf32BE();
+			BaseStream = stream;
+			ReadBuffer = readBuffer ?? new PassthroughBuffer();
+			ReadBuffer.Stream = BaseStream;
+			WriteBuffer = writeBuffer ?? new PassthroughBuffer();
+			WriteBuffer.Stream = BaseStream;
+			ReadBuffer.Read(4);
+			if (ReadBuffer.Equals(Utf8.BOM)) {
+				ReadBuffer.ShiftLeft(Utf8.BOM.Length);
+				Helper = new Utf8();
+			} else if (ReadBuffer.Equals(Utf32LE.BOM)) { // This must be checked before UTF-16LE, even though it's very unlikely
+				ReadBuffer.ShiftLeft(Utf32LE.BOM.Length);
+				Helper = new Utf32LE();
+			} else if (ReadBuffer.Equals(Utf16LE.BOM)) {
+				ReadBuffer.ShiftLeft(Utf16LE.BOM.Length);
+				Helper = new Utf16LE();
+			} else if (ReadBuffer.Equals(Utf16BE.BOM)) {
+				ReadBuffer.ShiftLeft(Utf16BE.BOM.Length);
+				Helper = new Utf16BE();
+			} else if (ReadBuffer.Equals(Utf32BE.BOM)) {
+				ReadBuffer.ShiftLeft(Utf32BE.BOM.Length);
+				Helper = new Utf32BE();
 			} else {
 				// There wasn't a BOM, so use the default.
-				helper = new Utf8();
+				Helper = new Utf8();
 			}
 		}
 
 		/// <inheritdoc/>
-		public override Boolean CanRead => readBuffer.CanRead || baseStream.CanRead;
+		public override Boolean CanRead => ReadBuffer.CanRead || BaseStream.CanRead;
 
 		/// <inheritdoc/>
-		public override Boolean CanSeek => readBuffer.CanSeek || baseStream.CanSeek;
+		public override Boolean CanSeek => ReadBuffer.CanSeek || BaseStream.CanSeek;
 
 		/// <inheritdoc/>
-		public override Boolean CanTimeout => baseStream.CanTimeout;
+		public override Boolean CanTimeout => BaseStream.CanTimeout;
 
 		/// <inheritdoc/>
-		public override Boolean CanWrite => writeBuffer.CanWrite || baseStream.CanWrite;
+		public override Boolean CanWrite => WriteBuffer.CanWrite || BaseStream.CanWrite;
 
 		/// <summary>
 		/// The encoding of a <see cref="TextStream"/>.
 		/// </summary>
-		public Encoding Encoding => helper.Enum;
+		public Encoding Encoding => Helper.Enum;
 
 		/// <inheritdoc/>
-		public override Int64 Length => baseStream.Length;
+		public override Int64 Length => BaseStream.Length;
 
 		/// <inheritdoc/>
 		public override Int64 Position {
-			get => readBuffer.Stale ? baseStream.Position : baseStream.Position - readBuffer.Length;
-			set => baseStream.Position = value;
+			get => ReadBuffer.Stale ? BaseStream.Position : BaseStream.Position - ReadBuffer.Length;
+			set => BaseStream.Position = value;
 		}
 
 		/// <inheritdoc/>
 		public override Int32 ReadTimeout {
-			get => baseStream.ReadTimeout;
-			set => baseStream.ReadTimeout = value;
+			get => BaseStream.ReadTimeout;
+			set => BaseStream.ReadTimeout = value;
 		}
 
 		/// <inheritdoc/>
 		public override Int32 WriteTimeout {
-			get => baseStream.WriteTimeout;
-			set => baseStream.WriteTimeout = value;
+			get => BaseStream.WriteTimeout;
+			set => BaseStream.WriteTimeout = value;
 		}
 
 		/// <inheritdoc/>
-		public override IAsyncResult BeginRead(Byte[] buffer, Int32 offset, Int32 count, AsyncCallback callback, Object? state) => baseStream.BeginRead(buffer, offset, count, callback, state);
+		public override IAsyncResult BeginRead(Byte[] buffer, Int32 offset, Int32 count, AsyncCallback callback, Object? state) => BaseStream.BeginRead(buffer, offset, count, callback, state);
 
 		/// <inheritdoc/>
-		public override IAsyncResult BeginWrite(Byte[] buffer, Int32 offset, Int32 count, AsyncCallback callback, Object? state) => baseStream.BeginWrite(buffer, offset, count, callback, state);
+		public override IAsyncResult BeginWrite(Byte[] buffer, Int32 offset, Int32 count, AsyncCallback callback, Object? state) => BaseStream.BeginWrite(buffer, offset, count, callback, state);
 
 		/// <inheritdoc/>
-		public override void Close() => baseStream.Close();
+		public override void Close() => BaseStream.Close();
 
 		/// <inheritdoc/>
-		public override void CopyTo(Stream destination, Int32 bufferSize) => baseStream.CopyTo(destination, bufferSize);
+		public override void CopyTo(Stream destination, Int32 bufferSize) => BaseStream.CopyTo(destination, bufferSize);
 
 		/// <inheritdoc/>
 		public override Task CopyToAsync(Stream destination, Int32 bufferSize, CancellationToken cancellationToken) {
 			Guard.NotNull(destination, nameof(destination));
-			return baseStream.CopyToAsync(destination, bufferSize, cancellationToken);
+			return BaseStream.CopyToAsync(destination, bufferSize, cancellationToken);
 		}
 
 		/// <inheritdoc/>
-		public override ValueTask DisposeAsync() => baseStream.DisposeAsync();
+		public override ValueTask DisposeAsync() => BaseStream.DisposeAsync();
 
 		/// <inheritdoc/>
 		public override Int32 EndRead(IAsyncResult asyncResult) {
 			Guard.NotNull(asyncResult, nameof(asyncResult));
-			return baseStream.EndRead(asyncResult);
+			return BaseStream.EndRead(asyncResult);
 		}
 
 		/// <inheritdoc/>
 		public override void EndWrite(IAsyncResult asyncResult) {
 			Guard.NotNull(asyncResult, nameof(asyncResult));
-			baseStream.EndWrite(asyncResult);
+			BaseStream.EndWrite(asyncResult);
 		}
 
 		/// <inheritdoc/>
-		public override Boolean Equals(Object? obj) => baseStream.Equals(obj);
+		public override Boolean Equals(Object? obj) => BaseStream.Equals(obj);
 
 		/// <inheritdoc/>
-		public override void Flush() => baseStream.Flush();
+		public override void Flush() => BaseStream.Flush();
 
 		/// <inheritdoc/>
-		public override Task FlushAsync(CancellationToken cancellationToken) => baseStream.FlushAsync(cancellationToken);
+		public override Task FlushAsync(CancellationToken cancellationToken) => BaseStream.FlushAsync(cancellationToken);
 
 		/// <inheritdoc/>
-		public override Int32 GetHashCode() => baseStream.GetHashCode();
+		public override Int32 GetHashCode() => BaseStream.GetHashCode();
 
 		/// <inheritdoc/>
-		public override Object InitializeLifetimeService() => baseStream.InitializeLifetimeService();
+		public override Object InitializeLifetimeService() => BaseStream.InitializeLifetimeService();
 
 		/// <summary>
 		/// Peeks at a byte from the stream but does not advance the position within the stream. Returns -1 if at the end of the stream.
 		/// </summary>
 		/// <returns>The unsigned byte cast to an <see cref="Int32"/>, or -1 if at the end of the stream.</returns>
 		public Int32 PeekByte() {
-			if (readBuffer.Stale) {
-				readBuffer.Read(baseStream);
+			if (ReadBuffer.Stale) {
+				ReadBuffer.Read();
 			}
-			return readBuffer.Peek();
+			return ReadBuffer.Peek();
 		}
 
 		/// <inheritdoc/>
@@ -183,17 +185,17 @@ namespace Stringier.Streams {
 
 		/// <inheritdoc/>
 		public override Int32 Read(Span<Byte> buffer) {
-			if (this.readBuffer.Stale) {
-				return baseStream.Read(buffer);
+			if (ReadBuffer.Stale) {
+				return BaseStream.Read(buffer);
 			}
-			if (this.readBuffer.Length < buffer.Length) {
+			if (ReadBuffer.Length < buffer.Length) {
 				//This scenario sucks. We have to read partially from the buffer, and the remaining amount from the stream
 				Int32 val;
 				Int32 i = 0;
 				Int32 r = buffer.Length;
 				// Read from the buffer
-				while (i < this.readBuffer.Length && r-- > 0) {
-					val = this.readBuffer.Get();
+				while (i < this.ReadBuffer.Length && r-- > 0) {
+					val = this.ReadBuffer.Get();
 					buffer[i++] = val == -1 ? (Byte)0x00 : (Byte)val;
 				}
 				// Read from the stream
@@ -207,22 +209,22 @@ namespace Stringier.Streams {
 				Int32 first, second, third, fourth;
 				switch (buffer.Length) {
 				case 1:
-					this.readBuffer.Get(out first);
+					ReadBuffer.Get(out first);
 					buffer[0] = first == -1 ? (Byte)0x00 : (Byte)first;
 					return 1;
 				case 2:
-					this.readBuffer.Get(out first, out second);
+					ReadBuffer.Get(out first, out second);
 					buffer[0] = first == -1 ? (Byte)0x00 : (Byte)first;
 					buffer[1] = second == -1 ? (Byte)0x00 : (Byte)second;
 					return 2;
 				case 3:
-					this.readBuffer.Get(out first, out second, out third);
+					ReadBuffer.Get(out first, out second, out third);
 					buffer[0] = first == -1 ? (Byte)0x00 : (Byte)first;
 					buffer[1] = second == -1 ? (Byte)0x00 : (Byte)second;
 					buffer[2] = third == -1 ? (Byte)0x00 : (Byte)third;
 					return 3;
 				case 4:
-					this.readBuffer.Get(out first, out second, out third, out fourth);
+					ReadBuffer.Get(out first, out second, out third, out fourth);
 					buffer[0] = first == -1 ? (Byte)0x00 : (Byte)first;
 					buffer[1] = second == -1 ? (Byte)0x00 : (Byte)second;
 					buffer[2] = third == -1 ? (Byte)0x00 : (Byte)third;
@@ -235,59 +237,59 @@ namespace Stringier.Streams {
 		}
 
 		/// <inheritdoc/>
-		public override ValueTask<Int32> ReadAsync(Memory<Byte> buffer, CancellationToken cancellationToken = default) => baseStream.ReadAsync(buffer, cancellationToken);
+		public override ValueTask<Int32> ReadAsync(Memory<Byte> buffer, CancellationToken cancellationToken = default) => BaseStream.ReadAsync(buffer, cancellationToken);
 
 		/// <inheritdoc/>
-		public override Task<Int32> ReadAsync(Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken) => baseStream.ReadAsync(buffer, offset, count, cancellationToken);
+		public override Task<Int32> ReadAsync(Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken) => BaseStream.ReadAsync(buffer, offset, count, cancellationToken);
 
 		/// <inheritdoc/>
-		public override Int32 ReadByte() => readBuffer.Stale ? baseStream.ReadByte() : readBuffer.Get();
+		public override Int32 ReadByte() => ReadBuffer.Stale ? BaseStream.ReadByte() : ReadBuffer.Get();
 
 		/// <summary>
 		/// Reads a char from the stream and advances the position within the stream by the encoding byte count, or returns -1 if at the end of the stream.
 		/// </summary>
 		/// <returns>The unsigned char cast to an <see cref="Int32"/>, or -1 if at the end of the stream.</returns>
-		public Int32 ReadChar() => helper.ReadChar(this);
+		public Int32 ReadChar() => Helper.ReadChar(this);
 
 		/// <summary>
 		/// Reads a rune from the stream and advances the position within the stream by the encoding byte count, or returns -1 if at the end of the stream.
 		/// </summary>
 		/// <returns>The unsigned rune cast to an <see cref="Int32"/>, or -1 if at the end of the stream.</returns>
-		public Int32 ReadRune() => helper.ReadRune(this);
+		public Int32 ReadRune() => Helper.ReadRune(this);
 
 		/// <inheritdoc/>
 		public override Int64 Seek(Int64 offset, SeekOrigin origin) {
 			switch (origin) {
 			case SeekOrigin.Current:
-				if (readBuffer.Stale) {
+				if (ReadBuffer.Stale) {
 					goto default;
 				} else {
-					return baseStream.Seek(offset + readBuffer.Length, origin);
+					return BaseStream.Seek(offset + ReadBuffer.Length, origin);
 				}
 			default:
-				return baseStream.Seek(offset, origin);
+				return BaseStream.Seek(offset, origin);
 			}
 		}
 
 		/// <inheritdoc/>
-		public override void SetLength(Int64 value) => baseStream.SetLength(value);
+		public override void SetLength(Int64 value) => BaseStream.SetLength(value);
 
 		/// <inheritdoc/>
-		public override String ToString() => baseStream.ToString();
+		public override String ToString() => BaseStream.ToString();
 
 		/// <inheritdoc/>
-		public override void Write(ReadOnlySpan<Byte> buffer) => baseStream.Write(buffer);
+		public override void Write(ReadOnlySpan<Byte> buffer) => BaseStream.Write(buffer);
 
 		/// <inheritdoc/>
-		public override void Write(Byte[] buffer, Int32 offset, Int32 count) => baseStream.Write(buffer, offset, count);
+		public override void Write(Byte[] buffer, Int32 offset, Int32 count) => BaseStream.Write(buffer, offset, count);
 
 		/// <inheritdoc/>
-		public override ValueTask WriteAsync(ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken = default) => baseStream.WriteAsync(buffer, cancellationToken);
+		public override ValueTask WriteAsync(ReadOnlyMemory<Byte> buffer, CancellationToken cancellationToken = default) => BaseStream.WriteAsync(buffer, cancellationToken);
 
 		/// <inheritdoc/>
-		public override Task WriteAsync(Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken) => baseStream.WriteAsync(buffer, offset, count, cancellationToken);
+		public override Task WriteAsync(Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken) => BaseStream.WriteAsync(buffer, offset, count, cancellationToken);
 
 		/// <inheritdoc/>
-		public override void WriteByte(Byte value) => baseStream.WriteByte(value);
+		public override void WriteByte(Byte value) => BaseStream.WriteByte(value);
 	}
 }
