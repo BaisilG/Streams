@@ -173,12 +173,7 @@ namespace Stringier.Streams {
 		/// Peeks at a byte from the stream but does not advance the position within the stream. Returns -1 if at the end of the stream.
 		/// </summary>
 		/// <returns>The unsigned byte cast to an <see cref="Int32"/>, or -1 if at the end of the stream.</returns>
-		public Int32 PeekByte() {
-			if (ReadBuffer.Stale) {
-				ReadBuffer.Read();
-			}
-			return ReadBuffer.Peek();
-		}
+		public Int32 PeekByte() => ReadBuffer.Peek();
 
 		/// <inheritdoc/>
 		public override Int32 Read(Byte[] buffer, Int32 offset, Int32 count) => Read(buffer.AsSpan(offset, count));

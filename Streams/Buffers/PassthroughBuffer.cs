@@ -50,7 +50,12 @@ namespace Stringier.Streams {
 		}
 
 		/// <inheritdoc/>
-		public Int32 Peek() => Length > 0 ? Buffer[0] : -1;
+		public Int32 Peek() {
+			if (Length == 0) {
+				Read();
+			}
+			return Length > 0 ? Buffer[0] : -1;
+		}
 
 		/// <inheritdoc/>
 		public void Read() {
