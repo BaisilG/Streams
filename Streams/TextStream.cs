@@ -201,7 +201,10 @@ namespace Stringier.Streams {
 				return i;
 			} else {
 				//This scenario isn't too bad. The buffer is the same size or larger than what we want to read, so read that part of the buffer.
-				Int32 first, second, third, fourth;
+				Int32 first;
+				Int32 second;
+				Int32 third;
+				Int32 fourth;
 				switch (buffer.Length) {
 				case 1:
 					ReadBuffer.Get(out first);
