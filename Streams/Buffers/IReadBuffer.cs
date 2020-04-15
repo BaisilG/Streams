@@ -98,17 +98,26 @@ namespace Stringier.Streams {
 		/// Peeks at the first byte in the buffer.
 		/// </summary>
 		/// <returns>The byte, cast to a <see cref="Int32"/>.</returns>
+		/// <remarks>
+		/// If the buffer is stale, this also attempts to read into the buffer. The way this is done depends on the buffering strategy.
+		/// </remarks>
 		public Int32 Peek();
 
 		/// <summary>
 		/// Reads a byte into the buffer.
 		/// </summary>
+		/// <remarks>
+		/// This reads at least one byte into the buffer, but the exact amount depends on the buffering strategy.
+		/// </remarks>
 		public void Read();
 
 		/// <summary>
 		/// Reads <paramref name="amount"/> bytes into the buffer.
 		/// </summary>
 		/// <param name="amount">The amount of bytes to read.</param>
+		/// <remarks>
+		/// This reads at least <paramref name="amount"/> byte into the buffer, but the exact amount depends on the buffering strategy.
+		/// </remarks>
 		public void Read(Int32 amount) {
 			for (Int32 i = 0; i < amount; i++) {
 				Read();
@@ -119,7 +128,7 @@ namespace Stringier.Streams {
 		/// </summary>
 		/// <param name="amount">The amount of bytes to shift.</param>
 		/// <remarks>
-		/// This does not necessarily actually shift the contents, but will appear to.
+		/// This is used to move the current position within the buffer. It does not necessarily actually shift the contents, but will appear to.
 		/// </remarks>
 		public void ShiftLeft(Int32 amount);
 	}

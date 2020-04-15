@@ -19,7 +19,7 @@ namespace Stringier.Streams {
 	/// There are also some special <see cref="TextStream"/> methods which use the buffer for reading, such as <see cref="ReadRune"/> and related methods, which read more than a single byte.
 	/// </para>
 	/// </remarks>
-	public sealed partial class TextStream : Stream {
+	public sealed class TextStream : Stream {
 		/// <summary>
 		/// The underlying <see cref="Stream"/>.
 		/// </summary>
@@ -189,8 +189,8 @@ namespace Stringier.Streams {
 				Int32 i = 0;
 				Int32 r = buffer.Length;
 				// Read from the buffer
-				while (i < this.ReadBuffer.Length && r-- > 0) {
-					val = this.ReadBuffer.Get();
+				while (i < ReadBuffer.Length && r-- > 0) {
+					val = ReadBuffer.Get();
 					buffer[i++] = val == -1 ? (Byte)0x00 : (Byte)val;
 				}
 				// Read from the stream
@@ -241,7 +241,7 @@ namespace Stringier.Streams {
 		public override Task<Int32> ReadAsync(Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken) => BaseStream.ReadAsync(buffer, offset, count, cancellationToken);
 
 		/// <inheritdoc/>
-		public override Int32 ReadByte() => ReadBuffer.Stale ? BaseStream.ReadByte() : ReadBuffer.Get();
+		public override Int32 ReadByte() => ReadBuffer.Get();
 
 		/// <summary>
 		/// Reads a char from the stream and advances the position within the stream by the encoding byte count, or returns -1 if at the end of the stream.
