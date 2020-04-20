@@ -9,7 +9,7 @@ namespace Stringier.Streams.Buffers {
 		/// <summary>
 		/// The stream being buffered.
 		/// </summary>
-		internal Stream Stream;
+		private Stream stream;
 
 		/// <summary>
 		/// Gets a value that indicates whether the current buffer can be read from.
@@ -39,6 +39,25 @@ namespace Stringier.Streams.Buffers {
 			set {
 				if (value) {
 					Length = 0;
+				}
+			}
+		}
+
+		/// <summary>
+		/// The stream being buffered.
+		/// </summary>
+		internal virtual Stream Stream {
+			get {
+				if (stream is null) {
+					throw new InvalidOperationException("Buffer not associated with stream");
+				}
+				return stream;
+			}
+			set {
+				if (stream is null) {
+					stream = value;
+				} else {
+					throw new InvalidOperationException("Buffer already associated");
 				}
 			}
 		}
