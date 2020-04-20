@@ -14,6 +14,14 @@ namespace Stringier.Streams.Buffers {
 		public Int32 Length { get; set; }
 
 		/// <summary>
+		/// Gets or sets the position within the buffer.
+		/// </summary>
+		/// <remarks>
+		/// A value of <c>0</c> indicates the buffer is not seeked and is to be used normally.
+		/// </remarks>
+		public Int32 Position { get; set; }
+
+		/// <summary>
 		/// Whether data in the buffer is stale.
 		/// </summary>
 		public Boolean Stale {

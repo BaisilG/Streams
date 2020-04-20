@@ -24,6 +24,9 @@ namespace Stringier.Streams.Buffers {
 		public virtual Int32 Length { get; set; }
 
 		/// <inheritdoc/>
+		public Int32 Position { get; set; }
+
+		/// <inheritdoc/>
 		protected internal virtual Stream Stream {
 			get {
 				if (stream is null) {

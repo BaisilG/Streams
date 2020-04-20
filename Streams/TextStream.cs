@@ -107,7 +107,7 @@ namespace Stringier.Streams {
 
 		/// <inheritdoc/>
 		public override Int64 Position {
-			get => ReadBuffer.Stale ? BaseStream.Position : BaseStream.Position - ReadBuffer.Length;
+			get => ReadBuffer.Stale ? BaseStream.Position : BaseStream.Position - ReadBuffer.Length + ReadBuffer.Position;
 			set => BaseStream.Position = value;
 		}
 
