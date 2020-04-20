@@ -26,7 +26,9 @@ namespace Stringier.Streams.Buffers {
 		/// <inheritdoc/>
 		public Int32 Position { get; set; }
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// The stream being buffered
+		/// </summary>
 		protected internal virtual Stream Stream {
 			get {
 				if (stream is null) {
@@ -38,7 +40,7 @@ namespace Stringier.Streams.Buffers {
 				if (stream is null) {
 					stream = value;
 				} else {
-					throw new InvalidOperationException("Buffer already associated");
+					throw new InvalidOperationException("Buffer already associated with stream");
 				}
 			}
 		}

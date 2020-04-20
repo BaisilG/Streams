@@ -16,13 +16,13 @@ namespace Stringier.Streams {
 		public override Encoding Enum => Encoding.UTF8;
 
 		/// <inheritdoc/>
-		public override Int32 ReadChar(TextStream stream) {
+		public override Int32 ReadChar() {
 			if (secondChar.HasValue) {
 				Int32 @char = secondChar.Value;
 				secondChar = null;
 				return @char;
 			}
-			Int32 first = stream.ReadByte();
+			Int32 first = Stream.ReadByte();
 			Int32 second;
 			Int32 third;
 			Int32 fourth;
@@ -30,22 +30,22 @@ namespace Stringier.Streams {
 			case 1:
 				return first;
 			case 2:
-				second = stream.ReadByte();
+				second = Stream.ReadByte();
 				if (second == -1) {
 					return -1;
 				}
 				return Encodings.Utf8.Decode((Byte)first, (Byte)second).Value;
 			case 3:
-				second = stream.ReadByte();
-				third = stream.ReadByte();
+				second = Stream.ReadByte();
+				third = Stream.ReadByte();
 				if (second == -1 || third == -1) {
 					return -1;
 				}
 				return Encodings.Utf8.Decode((Byte)first, (Byte)second, (Byte)third).Value;
 			case 4:
-				second = stream.ReadByte();
-				third = stream.ReadByte();
-				fourth = stream.ReadByte();
+				second = Stream.ReadByte();
+				third = Stream.ReadByte();
+				fourth = Stream.ReadByte();
 				if (second == -1 || third == -1 || fourth == -1) {
 					return -1;
 				}
@@ -58,11 +58,11 @@ namespace Stringier.Streams {
 		}
 
 		/// <inheritdoc/>
-		public override Int32 ReadRune(TextStream stream) {
+		public override Int32 ReadRune() {
 			if (secondChar.HasValue) {
 				return -1;
 			}
-			Int32 first = stream.ReadByte();
+			Int32 first = Stream.ReadByte();
 			Int32 second;
 			Int32 third;
 			Int32 fourth;
@@ -70,22 +70,22 @@ namespace Stringier.Streams {
 			case 1:
 				return first;
 			case 2:
-				second = stream.ReadByte();
+				second = Stream.ReadByte();
 				if (second == -1) {
 					return -1;
 				}
 				return Encodings.Utf8.Decode((Byte)first, (Byte)second).Value;
 			case 3:
-				second = stream.ReadByte();
-				third = stream.ReadByte();
+				second = Stream.ReadByte();
+				third = Stream.ReadByte();
 				if (second == -1 || third == -1) {
 					return -1;
 				}
 				return Encodings.Utf8.Decode((Byte)first, (Byte)second, (Byte)third).Value;
 			case 4:
-				second = stream.ReadByte();
-				third = stream.ReadByte();
-				fourth = stream.ReadByte();
+				second = Stream.ReadByte();
+				third = Stream.ReadByte();
+				fourth = Stream.ReadByte();
 				if (second == -1 || third == -1 || fourth == -1) {
 					return -1;
 				}

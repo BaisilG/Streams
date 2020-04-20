@@ -83,6 +83,7 @@ namespace Stringier.Streams {
 				// There wasn't a BOM, so use the default.
 				Helper = new Utf8();
 			}
+			Helper.Stream = this;
 		}
 
 		/// <inheritdoc/>
@@ -196,13 +197,13 @@ namespace Stringier.Streams {
 		/// Reads a char from the stream and advances the position within the stream by the encoding byte count, or returns -1 if at the end of the stream.
 		/// </summary>
 		/// <returns>The unsigned char cast to an <see cref="Int32"/>, or -1 if at the end of the stream.</returns>
-		public Int32 ReadChar() => Helper.ReadChar(this);
+		public Int32 ReadChar() => Helper.ReadChar();
 
 		/// <summary>
 		/// Reads a rune from the stream and advances the position within the stream by the encoding byte count, or returns -1 if at the end of the stream.
 		/// </summary>
 		/// <returns>The unsigned rune cast to an <see cref="Int32"/>, or -1 if at the end of the stream.</returns>
-		public Int32 ReadRune() => Helper.ReadRune(this);
+		public Int32 ReadRune() => Helper.ReadRune();
 
 		/// <inheritdoc/>
 		public override Int64 Seek(Int64 offset, SeekOrigin origin) {

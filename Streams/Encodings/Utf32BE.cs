@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Stringier.Streams {
 	internal sealed class Utf32BE : EncodingHelper {
@@ -10,9 +8,9 @@ namespace Stringier.Streams {
 		public override Encoding Enum => Encoding.UTF32BE;
 
 		/// <inheritdoc/>
-		public override Int32 ReadChar(TextStream stream) => throw new NotImplementedException();
+		public override Int32 ReadChar() => throw new NotImplementedException();
 
 		/// <inheritdoc/>
-		public override Int32 ReadRune(TextStream stream) => throw new NotImplementedException();
+		public override Int32 ReadRune() => throw new NotImplementedException();
 	}
 }
