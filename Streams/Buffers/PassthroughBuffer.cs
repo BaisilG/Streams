@@ -53,7 +53,7 @@ namespace Stringier.Streams.Buffers {
 		}
 
 		/// <inheritdoc/>
-		public override void ShiftLeft(Int32 amount) {
+		public override void Shift(Int32 amount) {
 			if (amount > 4) {
 				amount = 4;
 			}

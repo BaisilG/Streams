@@ -30,12 +30,12 @@ namespace Stringier.Streams {
 		/// <summary>
 		/// The read buffer.
 		/// </summary>
-		private readonly Buffer ReadBuffer;
+		private readonly IReadBuffer ReadBuffer;
 
 		/// <summary>
 		/// The write buffer.
 		/// </summary>
-		private readonly Buffer WriteBuffer;
+		private readonly IWriteBuffer WriteBuffer;
 
 		/// <summary>
 		/// The encoding helper for this <see cref="TextStream"/>.
@@ -65,19 +65,19 @@ namespace Stringier.Streams {
 			WriteBuffer.Stream = BaseStream;
 			ReadBuffer.Read(4);
 			if (ReadBuffer.Equals(Utf8.BOM)) {
-				ReadBuffer.ShiftLeft(Utf8.BOM.Length);
+				ReadBuffer.Shift(Utf8.BOM.Length);
 				Helper = new Utf8();
 			} else if (ReadBuffer.Equals(Utf32LE.BOM)) { // This must be checked before UTF-16LE, even though it's very unlikely
-				ReadBuffer.ShiftLeft(Utf32LE.BOM.Length);
+				ReadBuffer.Shift(Utf32LE.BOM.Length);
 				Helper = new Utf32LE();
 			} else if (ReadBuffer.Equals(Utf16LE.BOM)) {
-				ReadBuffer.ShiftLeft(Utf16LE.BOM.Length);
+				ReadBuffer.Shift(Utf16LE.BOM.Length);
 				Helper = new Utf16LE();
 			} else if (ReadBuffer.Equals(Utf16BE.BOM)) {
-				ReadBuffer.ShiftLeft(Utf16BE.BOM.Length);
+				ReadBuffer.Shift(Utf16BE.BOM.Length);
 				Helper = new Utf16BE();
 			} else if (ReadBuffer.Equals(Utf32BE.BOM)) {
-				ReadBuffer.ShiftLeft(Utf32BE.BOM.Length);
+				ReadBuffer.Shift(Utf32BE.BOM.Length);
 				Helper = new Utf32BE();
 			} else {
 				// There wasn't a BOM, so use the default.
