@@ -1,43 +1,30 @@
 ﻿using System;
 using System.IO;
 
-namespace Stringier.Streams {
+namespace Stringier.Streams.Buffers {
 	/// <summary>
 	/// Provides a passthrough buffer for <see cref="TextStream"/>.
 	/// </summary>
 	/// <remarks>
 	/// This entire thing is required for peeking and reading the BOM. It's not a performance buffer, so it's very small. Otherwise, all operations pass-through to the base stream, such that no buffering is done.
 	/// </remarks>
-	internal sealed class PassthroughBuffer : IReadBuffer, IWriteBuffer {
+	internal sealed class PassthroughBuffer : Buffer {
 		private readonly Byte[] Buffer = new Byte[4];
 
 		/// <inheritdoc/>
-		public Boolean CanRead => Buffer.Length > 0;
+		public override Boolean CanRead => Buffer.Length > 0;
 
 		/// <inheritdoc/>
-		public Boolean CanSeek => Buffer.Length > 0;
+		public override Boolean CanSeek => Buffer.Length > 0;
 
 		/// <inheritdoc/>
-		public Boolean CanWrite => false;
+		public override Boolean CanWrite => false;
 
 		/// <inheritdoc/>
-		public Int32 Length { get; set; } = 0;
+		public override Int32 Length { get; set; } = 0;
 
 		/// <inheritdoc/>
-		public Boolean Stale {
-			get => Length == 0;
-			set {
-				if (value) {
-					Length = 0;
-				}
-			}
-		}
-
-		/// <inheritdoc/>
-		public Stream Stream { get; set; }
-
-		/// <inheritdoc/>
-		public Boolean Equals(Byte[] other) {
+		public override Boolean Equals(Byte[] other) {
 			if (Length < other.Length) {
 				return false;
 			}
@@ -50,7 +37,7 @@ namespace Stringier.Streams {
 		}
 
 		/// <inheritdoc/>
-		public Int32 Peek() {
+		public override Int32 Peek() {
 			if (Length == 0) {
 				Read();
 			}
@@ -58,7 +45,7 @@ namespace Stringier.Streams {
 		}
 
 		/// <inheritdoc/>
-		public void Read() {
+		public override void Read() {
 			Int32 read = Stream.ReadByte();
 			if (read >= 0) {
 				Buffer[Length++] = (Byte)read;
@@ -66,7 +53,7 @@ namespace Stringier.Streams {
 		}
 
 		/// <inheritdoc/>
-		public void ShiftLeft(Int32 amount) {
+		public override void ShiftLeft(Int32 amount) {
 			if (amount > 4) {
 				amount = 4;
 			}

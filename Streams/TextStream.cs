@@ -3,6 +3,8 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Defender;
+using Stringier.Streams.Buffers;
+using Buffer = Stringier.Streams.Buffers.Buffer;
 
 namespace Stringier.Streams {
 	/// <summary>
@@ -28,12 +30,12 @@ namespace Stringier.Streams {
 		/// <summary>
 		/// The read buffer.
 		/// </summary>
-		private readonly IReadBuffer ReadBuffer;
+		private readonly Buffer ReadBuffer;
 
 		/// <summary>
 		/// The write buffer.
 		/// </summary>
-		private readonly IWriteBuffer WriteBuffer;
+		private readonly Buffer WriteBuffer;
 
 		/// <summary>
 		/// The encoding helper for this <see cref="TextStream"/>.
@@ -55,7 +57,7 @@ namespace Stringier.Streams {
 		/// <param name="stream">The underlying <see cref="Stream"/>.</param>
 		/// <param name="readBuffer">The read buffer.</param>
 		/// <param name="writeBuffer">The write buffer.</param>
-		public TextStream(Stream stream, IReadBuffer? readBuffer, IWriteBuffer? writeBuffer) {
+		public TextStream(Stream stream, Buffer? readBuffer, Buffer? writeBuffer) {
 			BaseStream = stream;
 			ReadBuffer = readBuffer ?? new PassthroughBuffer();
 			ReadBuffer.Stream = BaseStream;
@@ -179,60 +181,7 @@ namespace Stringier.Streams {
 		public override Int32 Read(Byte[] buffer, Int32 offset, Int32 count) => Read(buffer.AsSpan(offset, count));
 
 		/// <inheritdoc/>
-		public override Int32 Read(Span<Byte> buffer) {
-			if (ReadBuffer.Stale) {
-				return BaseStream.Read(buffer);
-			}
-			if (ReadBuffer.Length < buffer.Length) {
-				//This scenario sucks. We have to read partially from the buffer, and the remaining amount from the stream
-				Int32 val;
-				Int32 i = 0;
-				Int32 r = buffer.Length;
-				// Read from the buffer
-				while (i < ReadBuffer.Length && r-- > 0) {
-					val = ReadBuffer.Get();
-					buffer[i++] = val == -1 ? (Byte)0x00 : (Byte)val;
-				}
-				// Read from the stream
-				while (i < buffer.Length && r-- > 0) {
-					val = ReadByte();
-					buffer[i++] = val == -1 ? (Byte)0x00 : (Byte)val;
-				}
-				return i;
-			} else {
-				//This scenario isn't too bad. The buffer is the same size or larger than what we want to read, so read that part of the buffer.
-				Int32 first;
-				Int32 second;
-				Int32 third;
-				Int32 fourth;
-				switch (buffer.Length) {
-				case 1:
-					ReadBuffer.Get(out first);
-					buffer[0] = first == -1 ? (Byte)0x00 : (Byte)first;
-					return 1;
-				case 2:
-					ReadBuffer.Get(out first, out second);
-					buffer[0] = first == -1 ? (Byte)0x00 : (Byte)first;
-					buffer[1] = second == -1 ? (Byte)0x00 : (Byte)second;
-					return 2;
-				case 3:
-					ReadBuffer.Get(out first, out second, out third);
-					buffer[0] = first == -1 ? (Byte)0x00 : (Byte)first;
-					buffer[1] = second == -1 ? (Byte)0x00 : (Byte)second;
-					buffer[2] = third == -1 ? (Byte)0x00 : (Byte)third;
-					return 3;
-				case 4:
-					ReadBuffer.Get(out first, out second, out third, out fourth);
-					buffer[0] = first == -1 ? (Byte)0x00 : (Byte)first;
-					buffer[1] = second == -1 ? (Byte)0x00 : (Byte)second;
-					buffer[2] = third == -1 ? (Byte)0x00 : (Byte)third;
-					buffer[3] = fourth == -1 ? (Byte)0x00 : (Byte)fourth;
-					return 4;
-				default:
-					return 0;
-				}
-			}
-		}
+		public override Int32 Read(Span<Byte> buffer) => ReadBuffer.Get(buffer);
 
 		/// <inheritdoc/>
 		public override ValueTask<Int32> ReadAsync(Memory<Byte> buffer, CancellationToken cancellationToken = default) => BaseStream.ReadAsync(buffer, cancellationToken);
