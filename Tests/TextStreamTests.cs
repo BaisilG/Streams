@@ -146,5 +146,22 @@ namespace Tests {
 			Assert.Equal(p5, stream.Position);
 			Assert.Equal(c5, stream.ReadRune());
 		}
+
+		[Theory]
+		[ClassData(typeof(ReadSpanData))]
+		public void ReadSpan(Stream baseStream, Buffer? readBuffer, Buffer? writeBuffer, Int32 p0, Byte[] b1, Int32 p1, Byte[] b2, Int32 p2, Byte[] b3, Int32 p3) {
+			using TextStream stream = readBuffer is null ? new TextStream(baseStream) : new TextStream(baseStream, readBuffer, writeBuffer);
+			Span<Byte> buffer = new Byte[4];
+			Assert.Equal(p0, stream.Position);
+			_ = stream.Read(buffer);
+			Assert.Equal(b1, buffer.ToArray());
+			Assert.Equal(p1, stream.Position);
+			_ = stream.Read(buffer);
+			Assert.Equal(b2, buffer.ToArray());
+			Assert.Equal(p2, stream.Position);
+			_ = stream.Read(buffer);
+			Assert.Equal(b3, buffer.ToArray());
+			Assert.Equal(p3, stream.Position);
+		}
 	}
 }
