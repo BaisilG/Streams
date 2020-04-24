@@ -3,7 +3,7 @@ using Stringier.Encodings;
 
 namespace Stringier.Streams {
 
-	internal sealed class Utf8 : EncodingHelper {
+	internal sealed class Utf8Helper : EncodingHelper {
 		/// <summary>
 		/// The second char of a multi-char sequence.
 		/// </summary>
@@ -60,7 +60,7 @@ namespace Stringier.Streams {
 		/// <inheritdoc/>
 		public override Int32 ReadRune() {
 			if (secondChar.HasValue) {
-				return -1;
+				return -2;
 			}
 			Int32 first = Stream.ReadByte();
 			Int32 second;

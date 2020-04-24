@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Stringier.Streams.EncodingHelper" Collapsed="true">
+    <Position X="5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAASAAAAAAAAAAAIAAEACAAAAAAAAAA=</HashCode>
+      <FileName>Encodings\EncodingHelper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Stringier.Streams.Utf16BEHelper" Collapsed="true">
+    <Position X="5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAIAAAASAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Encodings\Utf16BEHelper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Stringier.Streams.Utf16LEHelper" Collapsed="true">
+    <Position X="7.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAIAAAASAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Encodings\Utf16LEHelper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Stringier.Streams.Utf32BEHelper" Collapsed="true">
+    <Position X="2.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAIAAAAQAAAAAAAAAAAAAAEAAAAAAAAAAAA=</HashCode>
+      <FileName>Encodings\Utf32BEHelper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Stringier.Streams.Utf8Helper" Collapsed="true">
+    <Position X="9.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAIAAAASAAAAAAAAAAAAAAEEAAAAAAAAAAA=</HashCode>
+      <FileName>Encodings\Utf8Helper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Stringier.Streams.Utf16Helper" Collapsed="true">
+    <Position X="6.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAA=</HashCode>
+      <FileName>Encodings\Utf16Helper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Stringier.Streams.Utf32Helper" Collapsed="true">
+    <Position X="1.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAACAAAAAAAAAAAAAAAEAAAAAAAAAAA=</HashCode>
+      <FileName>Encodings\Utf32Helper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Stringier.Streams.Utf32LEHelper" Collapsed="true">
+    <Position X="0.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAIAAAAQAAAAAAAAAAAAAAEAAAAAAAAAAAA=</HashCode>
+      <FileName>Encodings\Utf32LEHelper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

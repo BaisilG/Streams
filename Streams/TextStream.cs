@@ -57,6 +57,9 @@ namespace Stringier.Streams {
 		/// <param name="stream">The underlying <see cref="Stream"/>.</param>
 		/// <param name="readBuffer">The read buffer.</param>
 		/// <param name="writeBuffer">The write buffer.</param>
+		/// <remarks>
+		/// This attempts to determine the encoding only by looking at the BOM. While this is fast and accurate in most cases, it can fail; so can the alternatives. Be aware of this possibility. In cases where rereading is not generally possible, such as network streams, it is strongly advized to use a consistent encoding or utilize a handshake procedure to establish the encoding explicitly.
+		/// </remarks>
 		public TextStream(Stream stream, Buffer? readBuffer, Buffer? writeBuffer) {
 			BaseStream = stream;
 			ReadBuffer = readBuffer ?? new PassthroughBuffer();
@@ -64,24 +67,24 @@ namespace Stringier.Streams {
 			WriteBuffer = writeBuffer ?? new PassthroughBuffer();
 			WriteBuffer.Stream = BaseStream;
 			ReadBuffer.Read(4);
-			if (ReadBuffer.Equals(Utf8.BOM)) {
-				ReadBuffer.Shift(Utf8.BOM.Length);
-				Helper = new Utf8();
-			} else if (ReadBuffer.Equals(Utf32LE.BOM)) { // This must be checked before UTF-16LE, even though it's very unlikely
-				ReadBuffer.Shift(Utf32LE.BOM.Length);
-				Helper = new Utf32LE();
-			} else if (ReadBuffer.Equals(Utf16LE.BOM)) {
-				ReadBuffer.Shift(Utf16LE.BOM.Length);
-				Helper = new Utf16LE();
-			} else if (ReadBuffer.Equals(Utf16BE.BOM)) {
-				ReadBuffer.Shift(Utf16BE.BOM.Length);
-				Helper = new Utf16BE();
-			} else if (ReadBuffer.Equals(Utf32BE.BOM)) {
-				ReadBuffer.Shift(Utf32BE.BOM.Length);
-				Helper = new Utf32BE();
+			if (ReadBuffer.Equals(Utf8Helper.BOM)) {
+				ReadBuffer.Shift(Utf8Helper.BOM.Length);
+				Helper = new Utf8Helper();
+			} else if (ReadBuffer.Equals(Utf32LEHelper.BOM)) { // This must be checked before UTF-16LE, even though it's very unlikely
+				ReadBuffer.Shift(Utf32LEHelper.BOM.Length);
+				Helper = new Utf32LEHelper();
+			} else if (ReadBuffer.Equals(Utf16LEHelper.BOM)) {
+				ReadBuffer.Shift(Utf16LEHelper.BOM.Length);
+				Helper = new Utf16LEHelper();
+			} else if (ReadBuffer.Equals(Utf16BEHelper.BOM)) {
+				ReadBuffer.Shift(Utf16BEHelper.BOM.Length);
+				Helper = new Utf16BEHelper();
+			} else if (ReadBuffer.Equals(Utf32BEHelper.BOM)) {
+				ReadBuffer.Shift(Utf32BEHelper.BOM.Length);
+				Helper = new Utf32BEHelper();
 			} else {
 				// There wasn't a BOM, so use the default.
-				Helper = new Utf8();
+				Helper = new Utf8Helper();
 			}
 			Helper.Stream = this;
 		}

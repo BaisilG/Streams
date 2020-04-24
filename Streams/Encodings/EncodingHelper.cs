@@ -8,7 +8,7 @@ namespace Stringier.Streams {
 	/// <remarks>
 	/// This exists only to help manage read/write operations from <see cref="TextStream"/> in a maintainable and scalable way.
 	/// </remarks>
-	internal abstract partial class EncodingHelper {
+	internal abstract class EncodingHelper {
 		/// <summary>
 		/// The stream.
 		/// </summary>
@@ -48,6 +48,9 @@ namespace Stringier.Streams {
 		/// Reads a <see cref="Rune"/>.
 		/// </summary>
 		/// <returns>The <see cref="Rune"/>, cast to a <see cref="Int32"/> value.</returns>
+		/// <remarks>
+		/// Like all stream operations, this returns -1 is a read can not occur. Additionally, this may return -2 if the stream is in a state where a char is buffered from a previous read, creating a situation in which the stream is positioned inside of a code unit. This means another call to <see cref="ReadChar"/> is required to flush the buffer.
+		/// </remarks>
 		public abstract Int32 ReadRune();
 	}
 }
