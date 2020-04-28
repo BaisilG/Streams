@@ -5,6 +5,8 @@ using Defender;
 using Xunit;
 using Stringier.Streams.Buffers;
 using Buffer = Stringier.Streams.Buffers.Buffer;
+using System.Text;
+using Encoding = Stringier.Streams.Encoding;
 
 namespace Tests {
 	[Collection("Tests")]
@@ -178,5 +180,36 @@ namespace Tests {
 				Assert.Equal(@byte, stream.ReadByte());
 			}
 		}
+
+		[Theory]
+		[ClassData(typeof(WriteCharData))]
+		public void WriteChar(Stream baseStream, Buffer? readBuffer, Buffer? writeBuffer, Encoding encoding, Int32[] chars) {
+			using TextStream stream = readBuffer is null ? new TextStream(baseStream, encoding) : new TextStream(baseStream, readBuffer, writeBuffer, encoding);
+			foreach (Int32 @char in chars) {
+				if (@char >= 0) {
+					stream.WriteChar((Char)@char);
+				}
+			}
+			stream.Position = 0;
+			foreach (Int32 @char in chars) {
+				Assert.Equal(@char, stream.ReadChar());
+			}
+		}
+
+		[Theory]
+		[ClassData(typeof(WriteRuneData))]
+		public void WriteRune(Stream baseStream, Buffer? readBuffer, Buffer? writeBuffer, Encoding encoding, Int32[] runes) {
+			using TextStream stream = readBuffer is null ? new TextStream(baseStream, encoding) : new TextStream(baseStream, readBuffer, writeBuffer, encoding);
+			foreach (Int32 rune in runes) {
+				if (rune >= 0) {
+					stream.WriteRune((Rune)rune);
+				}
+			}
+			stream.Position = 0;
+			foreach (Int32 rune in runes) {
+				Assert.Equal(rune, stream.ReadRune());
+			}
+		}
+
 	}
 }

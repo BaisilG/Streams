@@ -17,5 +17,11 @@ namespace Stringier.Streams {
 			little += big << 8;
 			return little;
 		}
+
+		/// <inheritdoc/>
+		public override void WriteChar(Char value) {
+			Stream.WriteByte((Byte)value);
+			Stream.WriteByte((Byte)(value >> 8));
+		}
 	}
 }

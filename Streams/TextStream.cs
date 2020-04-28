@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Defender;
+using Stringier.Encodings;
 using Stringier.Streams.Buffers;
 using Buffer = Stringier.Streams.Buffers.Buffer;
 
@@ -52,6 +54,16 @@ namespace Stringier.Streams {
 		public TextStream(Stream stream) : this(stream, null, null) { }
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="TextStream"/> class.
+		/// </summary>
+		/// <param name="stream">The underlying <see cref="Stream"/>.</param>
+		/// <param name="encoding">The stream encoding.</param>
+		/// <remarks>
+		/// This uses an explicit encoding and then tries to consume that encodings BOM, just in case it was present as well.
+		/// </remarks>
+		public TextStream(Stream stream, Encoding encoding) : this(stream, null, null, encoding) { }
+
+		/// <summary>
 		/// Initialize a new instance of the <see cref="TextStream"/> class.
 		/// </summary>
 		/// <param name="stream">The underlying <see cref="Stream"/>.</param>
@@ -85,6 +97,64 @@ namespace Stringier.Streams {
 			} else {
 				// There wasn't a BOM, so use the default.
 				Helper = new Utf8Helper();
+			}
+			Helper.Stream = this;
+		}
+
+		/// <summary>
+		/// Initialize a new instance of the <see cref="TextStream"/> class.
+		/// </summary>
+		/// <param name="stream">The underlying <see cref="Stream"/>.</param>
+		/// <param name="readBuffer">The read buffer.</param>
+		/// <param name="writeBuffer">The write buffer.</param>
+		/// <param name="encoding">The stream encoding.</param>
+		/// <remarks>
+		/// This uses an explicit encoding and then tries to consume that encodings BOM, just in case it was present as well.
+		/// </remarks>
+		public TextStream(Stream stream, Buffer? readBuffer, Buffer? writeBuffer, Encoding encoding) {
+			BaseStream = stream;
+			ReadBuffer = readBuffer ?? new PassthroughBuffer();
+			ReadBuffer.Stream = BaseStream;
+			WriteBuffer = writeBuffer ?? new PassthroughBuffer();
+			WriteBuffer.Stream = BaseStream;
+			switch (encoding) {
+			case Encoding.UTF8:
+				Helper = new Utf8Helper();
+				ReadBuffer.Read(Utf8Helper.BOM.Length);
+				if (ReadBuffer.Equals(Utf8Helper.BOM)) {
+					ReadBuffer.Shift(Utf8Helper.BOM.Length);
+				}
+				break;
+			case Encoding.UTF16BE:
+				Helper = new Utf16BEHelper();
+				ReadBuffer.Read(Utf16BEHelper.BOM.Length);
+				if (ReadBuffer.Equals(Utf16BEHelper.BOM)) {
+					ReadBuffer.Shift(Utf16BEHelper.BOM.Length);
+				}
+				break;
+			case Encoding.UTF16LE:
+				Helper = new Utf16LEHelper();
+				ReadBuffer.Read(Utf16LEHelper.BOM.Length);
+				if (ReadBuffer.Equals(Utf16LEHelper.BOM)) {
+					ReadBuffer.Shift(Utf16LEHelper.BOM.Length);
+				}
+				break;
+			case Encoding.UTF32BE:
+				Helper = new Utf32BEHelper();
+				ReadBuffer.Read(Utf32BEHelper.BOM.Length);
+				if (ReadBuffer.Equals(Utf32BEHelper.BOM)) {
+					ReadBuffer.Shift(Utf32BEHelper.BOM.Length);
+				}
+				break;
+			case Encoding.UTF32LE:
+				Helper = new Utf32LEHelper();
+				ReadBuffer.Read(Utf32LEHelper.BOM.Length);
+				if (ReadBuffer.Equals(Utf32LEHelper.BOM)) {
+					ReadBuffer.Shift(Utf32LEHelper.BOM.Length);
+				}
+				break;
+			default:
+				throw new ArgumentException("Encoding not handled", nameof(encoding));
 			}
 			Helper.Stream = this;
 		}
@@ -242,5 +312,17 @@ namespace Stringier.Streams {
 
 		/// <inheritdoc/>
 		public override void WriteByte(Byte value) => WriteBuffer.Write(value);
+
+		/// <summary>
+		/// Writes a <see cref="Char"/>.
+		/// </summary>
+		/// <param name="value">The character to write.</param>
+		public void WriteChar(Char value) => Helper.WriteChar(value);
+
+		/// <summary>
+		/// Writes a <see cref="Rune"/>.
+		/// </summary>
+		/// <param name="value">The rune to write.</param>
+		public void WriteRune(Rune value) => Helper.WriteRune(value);
 	}
 }

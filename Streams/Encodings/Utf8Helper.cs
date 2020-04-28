@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using Stringier.Encodings;
 
 namespace Stringier.Streams {
@@ -92,6 +93,20 @@ namespace Stringier.Streams {
 				return Encodings.Utf8.Decode((Byte)first, (Byte)second, (Byte)third, (Byte)fourth).Value;
 			default:
 				return -1;
+			}
+		}
+
+		/// <inheritdoc/>
+		public override void WriteChar(Char value) {
+			foreach (Byte @byte in Utf8.Encode(Utf16.Decode(value))) {
+				Stream.WriteByte(@byte);
+			}
+		}
+
+		/// <inheritdoc/>
+		public override void WriteRune(Rune value) {
+			foreach (Byte @byte in Utf8.Encode(value)) {
+				Stream.WriteByte(@byte);
 			}
 		}
 	}

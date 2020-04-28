@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using Stringier.Encodings;
 
 namespace Stringier.Streams {
@@ -16,6 +17,13 @@ namespace Stringier.Streams {
 				return Utf16.Decode((UInt16)high, (UInt16)ReadChar()).Value;
 			default:
 				return -1;
+			}
+		}
+
+		/// <inheritdoc/>
+		public sealed override void WriteRune(Rune value) {
+			foreach (Char @char in Utf16.Encode(value)!) {
+				WriteChar(@char);
 			}
 		}
 	}

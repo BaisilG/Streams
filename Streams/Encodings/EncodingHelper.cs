@@ -52,5 +52,17 @@ namespace Stringier.Streams {
 		/// Like all stream operations, this returns -1 is a read can not occur. Additionally, this may return -2 if the stream is in a state where a char is buffered from a previous read, creating a situation in which the stream is positioned inside of a code unit. This means another call to <see cref="ReadChar"/> is required to flush the buffer.
 		/// </remarks>
 		public abstract Int32 ReadRune();
+
+		/// <summary>
+		/// Writes a <see cref="Char"/>.
+		/// </summary>
+		/// <param name="value">The character to write.</param>
+		public abstract void WriteChar(Char value);
+
+		/// <summary>
+		/// Writes a <see cref="Rune"/>.
+		/// </summary>
+		/// <param name="value">The rune to write.</param>
+		public abstract void WriteRune(Rune value);
 	}
 }

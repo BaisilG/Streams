@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace Stringier.Streams {
 	internal sealed class Utf32LEHelper : Utf32Helper {
@@ -20,6 +21,22 @@ namespace Stringier.Streams {
 			b1 += b2 << 8;
 			b0 += b1 << 8;
 			return b0;
+		}
+
+		/// <inheritdoc/>
+		public override void WriteChar(Char value) {
+			Stream.WriteByte((Byte)value);
+			Stream.WriteByte((Byte)(value >> 8));
+			Stream.WriteByte(0x00);
+			Stream.WriteByte(0x00);
+		}
+
+		/// <inheritdoc/>
+		public override void WriteRune(Rune value) {
+			Stream.WriteByte((Byte)value.Value);
+			Stream.WriteByte((Byte)(value.Value >> 8));
+			Stream.WriteByte((Byte)(value.Value >> 16)); 
+			Stream.WriteByte((Byte)(value.Value >> 24));
 		}
 	}
 }
