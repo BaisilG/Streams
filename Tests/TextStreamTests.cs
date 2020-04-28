@@ -163,5 +163,20 @@ namespace Tests {
 			Assert.Equal(b3, buffer.ToArray());
 			Assert.Equal(p3, stream.Position);
 		}
+
+		[Theory]
+		[ClassData(typeof(WriteByteData))]
+		public void WriteByte(Stream baseStream, Buffer? readBuffer, Buffer? writeBuffer, Int32[] bytes) {
+			using TextStream stream = readBuffer is null ? new TextStream(baseStream) : new TextStream(baseStream, readBuffer, writeBuffer);
+			foreach (Int32 @byte in bytes) {
+				if (@byte >= 0) {
+					stream.WriteByte((Byte)@byte);
+				}
+			}
+			stream.Position = 0;
+			foreach (Int32 @byte in bytes) {
+				Assert.Equal(@byte, stream.ReadByte());
+			}
+		}
 	}
 }

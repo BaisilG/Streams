@@ -6,5 +6,11 @@ namespace Stringier.Streams.Buffers {
 		/// Gets a value indicating whether the buffer can be written to.
 		/// </summary>
 		public Boolean CanWrite { get; }
+
+		/// <summary>
+		/// Writes a byte into the buffer.
+		/// </summary>
+		/// <param name="value"></param>
+		public void Write(Byte value);
 	}
 }

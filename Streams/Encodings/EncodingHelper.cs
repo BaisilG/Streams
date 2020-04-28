@@ -25,7 +25,7 @@ namespace Stringier.Streams {
 		protected internal TextStream Stream {
 			get {
 				if (stream is null) {
-					throw new InvalidOperationException("Buffer not associated with stream");
+					throw new InvalidOperationException("EncodingHelper not associated with stream");
 				}
 				return stream;
 			}
@@ -33,7 +33,7 @@ namespace Stringier.Streams {
 				if (stream is null) {
 					stream = value;
 				} else {
-					throw new InvalidOperationException("Buffer already associated with stream");
+					throw new InvalidOperationException("EncodingHelper already associated with stream");
 				}
 			}
 		}

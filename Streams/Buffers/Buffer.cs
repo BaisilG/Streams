@@ -26,6 +26,12 @@ namespace Stringier.Streams.Buffers {
 		/// <inheritdoc/>
 		public Int32 Position { get; set; }
 
+		/// <inheritdoc/>
+		Stream IBuffer.Stream {
+			get => Stream;
+			set => Stream = value;
+		}
+
 		/// <summary>
 		/// The stream being buffered
 		/// </summary>
@@ -44,13 +50,6 @@ namespace Stringier.Streams.Buffers {
 				}
 			}
 		}
-
-		/// <inheritdoc/>
-		Stream IBuffer.Stream {
-			get => Stream;
-			set => Stream = value;
-		}
-
 		/// <inheritdoc/>
 		public abstract Boolean Equals(Byte[] other);
 
@@ -80,5 +79,8 @@ namespace Stringier.Streams.Buffers {
 
 		/// <inheritdoc/>
 		public abstract void Shift(Int32 amount);
+
+		/// <inheritdoc/>
+		public abstract void Write(Byte value);
 	}
 }

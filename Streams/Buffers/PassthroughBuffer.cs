@@ -67,5 +67,8 @@ namespace Stringier.Streams.Buffers {
 
 		/// <inheritdoc/>
 		public override String ToString() => $"[{Buffer[0]}, {Buffer[1]}, {Buffer[2]}, {Buffer[3]}]";
+
+		/// <inheritdoc/>
+		public override void Write(Byte value) => Stream.WriteByte(value);
 	}
 }

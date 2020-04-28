@@ -241,6 +241,6 @@ namespace Stringier.Streams {
 		public override Task WriteAsync(Byte[] buffer, Int32 offset, Int32 count, CancellationToken cancellationToken) => BaseStream.WriteAsync(buffer, offset, count, cancellationToken);
 
 		/// <inheritdoc/>
-		public override void WriteByte(Byte value) => BaseStream.WriteByte(value);
+		public override void WriteByte(Byte value) => WriteBuffer.Write(value);
 	}
 }
