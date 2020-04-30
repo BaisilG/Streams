@@ -8,6 +8,8 @@
 
 **Streams** provides extensions to [`Stream`](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) to make it easier to work with text streams. This includes both new `Stream` types, and extension methods for all streams.
 
+This is a closed source project, but issues and requests for the library can be filed here.
+
 # Documentation:
 
 Thanks to [GitHub Pages](https://pages.github.com/), documentation is available [here](https://Stringier.github.io/docs/)
